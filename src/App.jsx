@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AppProvider, useApp } from './context/AppContext';
 import HomePage from './pages/HomePage';
@@ -10,18 +10,9 @@ import PasswordProtection from './pages/PasswordProtection';
 
 function AppRoutes() {
   const { isAuthenticated, authenticate } = useApp();
-  const [error, setError] = useState('');
-
-  const handleAuthentication = (password) => {
-    const success = authenticate(password);
-    if (!success) {
-      setError('Incorrect password. Please try again.');
-    }
-    return success;
-  };
 
   if (!isAuthenticated) {
-    return <PasswordProtection onAuthenticated={handleAuthentication} error={error} />;
+    return <PasswordProtection onAuthenticated={authenticate} />;
   }
 
   return (

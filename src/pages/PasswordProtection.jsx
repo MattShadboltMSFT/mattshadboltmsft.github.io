@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function PasswordProtection({ onAuthenticated, error: externalError }) {
+export default function PasswordProtection({ onAuthenticated }) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
@@ -13,8 +13,6 @@ export default function PasswordProtection({ onAuthenticated, error: externalErr
       }
     }
   };
-
-  const displayError = error || externalError;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -40,9 +38,9 @@ export default function PasswordProtection({ onAuthenticated, error: externalErr
               autoFocus
             />
           </div>
-          {displayError && (
+          {error && (
             <div className="mb-4 text-red-600 text-sm">
-              {displayError}
+              {error}
             </div>
           )}
           <button
