@@ -389,9 +389,8 @@ For deployment issues:
 2. Go to https://vercel.com
 3. Click "Import Project"
 4. Select your repository
-5. Set root directory to `jays-footy-stats`
-6. Click "Deploy"
-7. Done! 🎉
+5. Click "Deploy"
+6. Done! 🎉
 
 Your app will be live in ~2 minutes.
 
