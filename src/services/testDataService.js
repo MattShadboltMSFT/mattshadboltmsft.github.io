@@ -6,7 +6,8 @@ export async function loadTestData(playerId) {
   const testMatches = generateTestMatches(playerId);
   
   // Check if test data already exists
-  const existingTestData = await db.matches.where('isTestData').equals(true).count();
+  const allMatches = await db.matches.toArray();
+  const existingTestData = allMatches.filter(m => m.isTestData).length;
   if (existingTestData > 0) {
     throw new Error('Test data already loaded. Please clear existing test data first.');
   }
@@ -19,7 +20,8 @@ export async function loadTestData(playerId) {
 
 // Clear all test data
 export async function clearAllTestData() {
-  const testMatches = await db.matches.where('isTestData').equals(true).toArray();
+  const allMatches = await db.matches.toArray();
+  const testMatches = allMatches.filter(m => m.isTestData);
   const ids = testMatches.map(m => m.id);
   
   if (ids.length > 0) {
@@ -31,6 +33,7 @@ export async function clearAllTestData() {
 
 // Check if test data exists
 export async function hasTestData() {
-  const count = await db.matches.where('isTestData').equals(true).count();
+  const allMatches = await db.matches.toArray();
+  const count = allMatches.filter(m => m.isTestData).length;
   return count > 0;
 }

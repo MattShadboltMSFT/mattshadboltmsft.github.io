@@ -41,7 +41,8 @@ export async function deleteMatch(id) {
 
 // Delete all test data
 export async function clearTestData() {
-  const testMatches = await db.matches.where('isTestData').equals(true).toArray();
+  const allMatches = await db.matches.toArray();
+  const testMatches = allMatches.filter(m => m.isTestData);
   const ids = testMatches.map(m => m.id);
   await db.matches.bulkDelete(ids);
   return ids.length;

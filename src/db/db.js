@@ -6,7 +6,7 @@ export const db = new Dexie('JaysFootyStatsDB');
 // Define schema
 db.version(1).stores({
   players: '++id, name, teamName, season',
-  matches: '++id, date, opponent, playerId, isTestData',
+  matches: '++id, date, opponent, playerId',
   settings: 'key'
 });
 
