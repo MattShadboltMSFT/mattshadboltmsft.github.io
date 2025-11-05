@@ -58,12 +58,12 @@ The Azure Static Web Apps Free tier includes:
    - **Source**: GitHub
    - Click "Sign in with GitHub"
    - **Organization**: MattShadboltMSFT
-   - **Repository**: mattsha
-   - **Branch**: main (or copilot/breakdown-specifications-work for testing)
+   - **Repository**: mattshadboltmsft.github.io
+   - **Branch**: main
    
 5. **Build Details**
    - **Build Presets**: Custom
-   - **App location**: `/jays-footy-stats`
+   - **App location**: `/`
    - **Api location**: (leave empty)
    - **Output location**: `dist`
 
@@ -151,10 +151,10 @@ az group create --name jays-footy-stats-rg --location eastus2
 az staticwebapp create \
   --name jays-footy-stats \
   --resource-group jays-footy-stats-rg \
-  --source https://github.com/MattShadboltMSFT/mattsha \
+  --source https://github.com/MattShadboltMSFT/mattshadboltmsft.github.io \
   --location "East US 2" \
   --branch main \
-  --app-location "/jays-footy-stats" \
+  --app-location "/" \
   --output-location "dist" \
   --sku Free \
   --login-with-github
@@ -242,7 +242,7 @@ If you prefer GitHub Pages instead of Azure:
    - Check Actions tab for status
 
 3. **Access Your App**
-   - URL: `https://mattshadboltmsft.github.io/mattsha/`
+   - URL: `https://mattshadboltmsft.github.io/`
    - Or custom domain if configured
 
 **Workflow File**: `.github/workflows/deploy.yml` ✅ Already configured!
@@ -277,7 +277,7 @@ If you prefer GitHub Pages instead of Azure:
 
 ### App Not Loading
 
-1. Check that app location is `/jays-footy-stats`
+1. Check that app location is `/`
 2. Verify output location is `dist`
 3. Check browser console for errors
 4. Ensure `staticwebapp.config.json` is deployed

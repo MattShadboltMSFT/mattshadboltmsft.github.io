@@ -9,7 +9,7 @@ Successfully delivered a complete AFL statistics tracking Progressive Web App (P
 ### Application: Jays Footy Stats
 A mobile-first web application for tracking performance statistics of junior Under 13's AFL players throughout the season.
 
-**Location**: `/jays-footy-stats/` directory
+**Location**: Root directory of repository
 
 ## Key Accomplishments
 
@@ -77,7 +77,7 @@ Technology Stack:
 
 ### File Structure
 ```
-jays-footy-stats/
+repository-root/
 ├── src/
 │   ├── context/AppContext.jsx        (Global state)
 │   ├── db/db.js                      (Database schema)
@@ -129,7 +129,6 @@ jays-footy-stats/
 
 **Setup**:
 ```bash
-cd jays-footy-stats
 npm install
 npm run dev
 ```
@@ -171,7 +170,6 @@ The application can be deployed to:
 
 ### Recommended: Vercel
 ```bash
-cd jays-footy-stats
 npm install -g vercel
 vercel deploy
 ```

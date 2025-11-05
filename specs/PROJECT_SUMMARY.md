@@ -7,23 +7,23 @@ This project implements an AFL statistics tracking Progressive Web App (PWA) bas
 ## Project Structure
 
 ```
-mattsha/
-├── jays-footy-stats/          # Main React application
-│   ├── src/
-│   │   ├── components/        # (Ready for future components)
-│   │   ├── context/          # AppContext for global state
-│   │   ├── data/             # Test fixture data (2025 season)
-│   │   ├── db/               # Database schema and models
-│   │   ├── pages/            # All page components
-│   │   ├── services/         # Business logic services
-│   │   └── App.jsx           # Main app with routing
-│   ├── public/               # Static assets
-│   ├── dist/                 # Production build output
-│   └── package.json          # Dependencies
-├── PRODUCT_SPEC.md           # PM specifications
-├── ENGINEERING_HANDOFF.md    # Engineering plan
-├── REQUIREMENTS_SUMMARY.md   # Quick reference
-└── TEST_DATA_SPEC.md         # Test data specification
+mattshadboltmsft.github.io/     # Repository root
+├── src/
+│   ├── components/              # (Ready for future components)
+│   ├── context/                 # AppContext for global state
+│   ├── data/                    # Test fixture data (2025 season)
+│   ├── db/                      # Database schema and models
+│   ├── pages/                   # All page components
+│   ├── services/                # Business logic services
+│   └── App.jsx                  # Main app with routing
+├── public/                      # Static assets
+├── dist/                        # Production build output
+├── specs/                       # Documentation
+├── package.json                 # Dependencies
+├── PRODUCT_SPEC.md              # PM specifications
+├── ENGINEERING_HANDOFF.md       # Engineering plan
+├── REQUIREMENTS_SUMMARY.md      # Quick reference
+└── TEST_DATA_SPEC.md            # Test data specification
 ```
 
 ## Implementation Details
@@ -190,7 +190,6 @@ Implemented 2025 season fixture data:
 
 ### Local Development
 ```bash
-cd jays-footy-stats
 npm install
 npm run dev
 ```

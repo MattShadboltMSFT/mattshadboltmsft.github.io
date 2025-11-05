@@ -5,7 +5,7 @@ This guide provides step-by-step instructions for deploying the Jays Footy Stats
 ## Prerequisites
 
 Before deploying, ensure:
-- ✅ Application builds successfully (`npm run build` in `jays-footy-stats/` directory)
+- ✅ Application builds successfully (`npm run build` in repository root)
 - ✅ All tests pass
 - ✅ Code is committed and pushed to GitHub
 
@@ -34,7 +34,7 @@ Azure Static Web Apps offers a generous free tier perfect for this application:
 2. Create a resource → "Static Web Apps"
 3. Select Free tier
 4. Connect to GitHub repository
-5. Set app location: `/jays-footy-stats`
+5. Set app location: `/`
 6. Set output location: `dist`
 7. Deploy!
 
@@ -54,12 +54,12 @@ Vercel provides the best experience for Vite/React applications with automatic d
 
 2. **Import Project**
    - Click "Add New..." → "Project"
-   - Select the `MattShadboltMSFT/mattsha` repository
+   - Select the `MattShadboltMSFT/mattshadboltmsft.github.io` repository
    - Vercel will auto-detect the configuration
 
 3. **Configure Build Settings**
    - Framework Preset: **Vite**
-   - Root Directory: **jays-footy-stats**
+   - Root Directory: **.**
    - Build Command: `npm run build` (auto-detected)
    - Output Directory: `dist` (auto-detected)
    - Install Command: `npm install` (auto-detected)
@@ -79,9 +79,6 @@ Vercel provides the best experience for Vite/React applications with automatic d
 ```bash
 # Install Vercel CLI
 npm install -g vercel
-
-# Navigate to app directory
-cd jays-footy-stats
 
 # Deploy
 vercel
@@ -119,12 +116,12 @@ Netlify is another excellent option with great PWA support.
 2. **Add New Site**
    - Click "Add new site" → "Import an existing project"
    - Choose "Deploy with GitHub"
-   - Select the `MattShadboltMSFT/mattsha` repository
+   - Select the `MattShadboltMSFT/mattshadboltmsft.github.io` repository
 
 3. **Configure Build Settings**
-   - Base directory: **jays-footy-stats**
+   - Base directory: **.**
    - Build command: **npm run build**
-   - Publish directory: **jays-footy-stats/dist**
+   - Publish directory: **dist**
 
 4. **Deploy**
    - Click "Deploy site"
@@ -141,9 +138,6 @@ Netlify is another excellent option with great PWA support.
 # Install Netlify CLI
 npm install -g netlify-cli
 
-# Navigate to app directory
-cd jays-footy-stats
-
 # Build the app
 npm run build
 
@@ -158,7 +152,6 @@ netlify deploy --prod
 
 1. Build the app locally:
    ```bash
-   cd jays-footy-stats
    npm install
    npm run build
    ```
@@ -183,7 +176,6 @@ GitHub Pages is free and works well for static sites.
 
 1. **Install gh-pages package**
    ```bash
-   cd jays-footy-stats
    npm install --save-dev gh-pages
    ```
 
@@ -196,11 +188,14 @@ GitHub Pages is free and works well for static sites.
    }
    ```
 
-3. **Update vite.config.js**
-   Add base URL:
+3. **Update vite.config.js (if needed)**
+   
+   For `username.github.io` repositories, no changes needed (served from root by default).
+   
+   For other repo names, add base URL:
    ```javascript
    export default defineConfig({
-     base: '/mattsha/',  // Replace with your repo name
+     base: '/your-repo-name/',
      // ... rest of config
    })
    ```
@@ -217,7 +212,7 @@ GitHub Pages is free and works well for static sites.
    - Save
 
 6. **Access your site**
-   - URL: `https://MattShadboltMSFT.github.io/mattsha/`
+   - URL: `https://MattShadboltMSFT.github.io/`
 
 **Note**: GitHub Pages may take a few minutes to go live after first deployment.
 
@@ -242,10 +237,10 @@ If you prefer Azure:
    az staticwebapp create \
      --name jays-footy-stats \
      --resource-group your-resource-group \
-     --source https://github.com/MattShadboltMSFT/mattsha \
+     --source https://github.com/MattShadboltMSFT/mattshadboltmsft.github.io \
      --location "East US 2" \
-     --branch copilot/breakdown-specifications-work \
-     --app-location "jays-footy-stats" \
+     --branch main \
+     --app-location "/" \
      --output-location "dist"
    ```
 
@@ -397,9 +392,8 @@ For deployment issues:
 2. Go to https://vercel.com
 3. Click "Import Project"
 4. Select your repository
-5. Set root directory to `jays-footy-stats`
-6. Click "Deploy"
-7. Done! 🎉
+5. Click "Deploy"
+6. Done! 🎉
 
 Your app will be live in ~2 minutes.
 

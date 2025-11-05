@@ -7,12 +7,12 @@ An AFL statistics tracking Progressive Web App (PWA) for junior Under 13's playe
 This application is ready for deployment! Multiple free deployment options available.
 
 **🎯 Quick Deploy Options (All FREE):**
-- **Azure Static Web Apps** (FREE): [Complete Guide →](../AZURE_DEPLOYMENT.md) - 100% free, no credit card
+- **Azure Static Web Apps** (FREE): [Complete Guide →](specs/AZURE_DEPLOYMENT.md) - 100% free, no credit card
 - **GitHub Pages** (FREE): [Enable in Settings →](#deployment) - Simplest free option
-- **Vercel**: [Deploy to Vercel →](https://vercel.com/new/clone?repository-url=https://github.com/MattShadboltMSFT/mattsha&root-directory=jays-footy-stats)
-- **Netlify**: [Deploy to Netlify →](https://app.netlify.com/start/deploy?repository=https://github.com/MattShadboltMSFT/mattsha)
+- **Vercel**: [Deploy to Vercel →](https://vercel.com/new/clone?repository-url=https://github.com/MattShadboltMSFT/mattshadboltmsft.github.io)
+- **Netlify**: [Deploy to Netlify →](https://app.netlify.com/start/deploy?repository=https://github.com/MattShadboltMSFT/mattshadboltmsft.github.io)
 
-📖 See [DEPLOYMENT_GUIDE.md](../DEPLOYMENT_GUIDE.md) for all deployment options
+📖 See [DEPLOYMENT_GUIDE.md](specs/DEPLOYMENT_GUIDE.md) for all deployment options
 
 ## Features
 
@@ -109,24 +109,22 @@ From the Dashboard:
 
 ## Deployment
 
-📖 **See [DEPLOYMENT_GUIDE.md](../DEPLOYMENT_GUIDE.md) for complete deployment instructions**
+📖 **See [DEPLOYMENT_GUIDE.md](specs/DEPLOYMENT_GUIDE.md) for complete deployment instructions**
 
 The app is ready to deploy to multiple platforms:
 
 ### Option 1: Vercel (Recommended - 2 minutes)
 1. Go to https://vercel.com
 2. Import your GitHub repository
-3. Set root directory to `jays-footy-stats`
-4. Click Deploy
-5. Done! ✅
+3. Click Deploy
+4. Done! ✅
 
 Configuration files included: `vercel.json`
 
 ### Option 2: Netlify
 1. Go to https://app.netlify.com
 2. Import from GitHub
-3. Set base directory to `jays-footy-stats`
-4. Click Deploy
+3. Click Deploy
 
 Configuration files included: `netlify.toml`
 
