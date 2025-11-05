@@ -188,11 +188,14 @@ GitHub Pages is free and works well for static sites.
    }
    ```
 
-3. **Update vite.config.js**
-   Add base URL:
+3. **Update vite.config.js (if needed)**
+   
+   For `username.github.io` repositories, no changes needed (served from root by default).
+   
+   For other repo names, add base URL:
    ```javascript
    export default defineConfig({
-     base: '/',  // For username.github.io repos, base is root
+     base: '/your-repo-name/',
      // ... rest of config
    })
    ```
