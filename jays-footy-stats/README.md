@@ -2,6 +2,15 @@
 
 An AFL statistics tracking Progressive Web App (PWA) for junior Under 13's players. Track performance, view trends, and export season reports.
 
+## 🚀 Deployment Status
+
+This application is ready for deployment! See [DEPLOYMENT_GUIDE.md](../DEPLOYMENT_GUIDE.md) in the root directory for complete deployment instructions.
+
+**Quick Deploy Options:**
+- **Vercel** (Recommended): [Deploy to Vercel →](https://vercel.com/new/clone?repository-url=https://github.com/MattShadboltMSFT/mattsha&root-directory=jays-footy-stats)
+- **Netlify**: [Deploy to Netlify →](https://app.netlify.com/start/deploy?repository=https://github.com/MattShadboltMSFT/mattsha)
+- **GitHub Pages**: See workflow in `.github/workflows/deploy.yml`
+
 ## Features
 
 - ✅ **Match Recording** - Quick stat entry with +/- counters
@@ -97,11 +106,39 @@ From the Dashboard:
 
 ## Deployment
 
-The app is a Progressive Web App (PWA) and can be deployed to:
+📖 **See [DEPLOYMENT_GUIDE.md](../DEPLOYMENT_GUIDE.md) for complete deployment instructions**
 
-- **Vercel** - `vercel deploy`
-- **Netlify** - Connect GitHub repo
-- **GitHub Pages** - Build and deploy dist folder
+The app is ready to deploy to multiple platforms:
+
+### Option 1: Vercel (Recommended - 2 minutes)
+1. Go to https://vercel.com
+2. Import your GitHub repository
+3. Set root directory to `jays-footy-stats`
+4. Click Deploy
+5. Done! ✅
+
+Configuration files included: `vercel.json`
+
+### Option 2: Netlify
+1. Go to https://app.netlify.com
+2. Import from GitHub
+3. Set base directory to `jays-footy-stats`
+4. Click Deploy
+
+Configuration files included: `netlify.toml`
+
+### Option 3: GitHub Pages
+Automated workflow is configured in `.github/workflows/deploy.yml`
+1. Enable GitHub Pages in repository settings
+2. Push to main branch
+3. GitHub Actions will build and deploy automatically
+
+### Other Options
+- Azure Static Web Apps
+- AWS Amplify
+- Cloudflare Pages
+
+All platforms supported with the provided configuration files.
 
 ## Offline Support
 
