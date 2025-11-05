@@ -49,7 +49,7 @@ export function exportToCSV(matches, playerName, season) {
     match.stats.interceptions,
     match.stats.freesFor,
     match.stats.freesAgainst,
-    match.notes.replace(/[\r\n]+/g, ' ') // Remove line breaks from notes
+    (match.notes || '').replace(/[\r\n]+/g, ' ') // Remove line breaks from notes
   ]);
 
   // Build CSV

@@ -38,16 +38,17 @@ export default function MatchEntryPage() {
     if (isEditing) {
       async function loadMatch() {
         const match = await getMatch(parseInt(id));
-        if (match) {
+        if (match && match.date) {
+          const matchDate = typeof match.date === 'string' ? match.date : new Date(match.date).toISOString();
           setFormData({
-            date: match.date.split('T')[0],
-            opponent: match.opponent,
-            venue: match.venue,
-            position: match.position,
-            quartersPlayed: match.quartersPlayed,
-            result: match.result,
-            stats: match.stats,
-            notes: match.notes,
+            date: matchDate.split('T')[0],
+            opponent: match.opponent || '',
+            venue: match.venue || '',
+            position: match.position || '',
+            quartersPlayed: match.quartersPlayed || 4,
+            result: match.result || 'Unknown',
+            stats: match.stats || {},
+            notes: match.notes || '',
           });
         }
       }

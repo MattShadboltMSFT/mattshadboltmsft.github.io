@@ -184,7 +184,7 @@ export default function HomePage() {
               {recentMatches.map((match) => (
                 <Link
                   key={match.id}
-                  to={`/match/${match.id}`}
+                  to={`/match/${match.id}/view`}
                   className="block border rounded-lg p-4 hover:bg-gray-50 transition"
                 >
                   <div className="flex justify-between items-start">
