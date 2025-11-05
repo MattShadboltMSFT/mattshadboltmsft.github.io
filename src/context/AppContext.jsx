@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { getDefaultPlayer, initDatabase } from '../db/db';
+import { AUTH_CONFIG } from '../config/auth';
 
 const AppContext = createContext();
 
@@ -15,6 +16,7 @@ export function AppProvider({ children }) {
   const [player, setPlayer] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     async function initialize() {
@@ -33,11 +35,21 @@ export function AppProvider({ children }) {
     initialize();
   }, []);
 
+  const authenticate = (password) => {
+    if (password === AUTH_CONFIG.password) {
+      setIsAuthenticated(true);
+      return true;
+    }
+    return false;
+  };
+
   const value = {
     player,
     setPlayer,
     loading,
-    error
+    error,
+    isAuthenticated,
+    authenticate
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
