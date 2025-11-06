@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useTheme } from '../context/ThemeContext';
 
 export default function PasswordProtection({ onAuthenticated }) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const { theme, currentTheme } = useTheme();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -14,6 +16,56 @@ export default function PasswordProtection({ onAuthenticated }) {
     }
   };
 
+  // Modern Premium Theme Styling
+  if (currentTheme === 'modernPremium') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-modern-bg-primary px-4">
+        <div className="bg-modern-bg-card p-10 rounded-modern-xl shadow-modern-xl w-full max-w-md border border-modern-border-light animate-modern-fade-in">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-modern-accent-primary to-modern-accent-secondary rounded-modern-lg mb-4">
+              <span className="text-3xl">⚽</span>
+            </div>
+            <h1 className="text-modern-3xl font-bold text-modern-text-primary mb-2">
+              Jays Footy Stats
+            </h1>
+            <p className="text-modern-sm text-modern-text-secondary">Enter password to access your stats</p>
+          </div>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label htmlFor="password" className="block text-modern-sm font-medium text-modern-text-primary mb-2">
+                Password
+              </label>
+              <input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setError('');
+                }}
+                className={`w-full px-4 py-3 ${theme.styles.input} text-modern-base`}
+                placeholder="Enter password"
+                autoFocus
+              />
+            </div>
+            {error && (
+              <div className="text-modern-sm text-modern-accent-error bg-red-50 border border-red-200 rounded-modern px-4 py-3">
+                {error}
+              </div>
+            )}
+            <button
+              type="submit"
+              className={`w-full ${theme.colors.btnPrimary} py-3 px-4 ${theme.styles.button} text-modern-base font-semibold`}
+            >
+              Enter
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
+  // Default/Other Themes Styling
   return (
     <div className="min-h-screen flex items-center justify-center bg-dark-bg px-4">
       <div className="bg-dark-card p-8 rounded-xl shadow-2xl w-full max-w-md border border-dark-border">

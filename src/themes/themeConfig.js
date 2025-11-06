@@ -116,11 +116,56 @@ export const themes = {
       input: 'rounded border-b-2 border-gray-300 focus:border-blue-600 bg-gray-50 text-gray-900',
       badge: 'rounded px-2 py-1 text-xs font-medium uppercase tracking-wide',
     }
+  },
+
+  // OPTION 4: Modern Premium Theme
+  // Inspired by Notion, Linear, and Stripe - Clean, contemporary, and sophisticated
+  modernPremium: {
+    id: 'modernPremium',
+    name: 'Modern Premium',
+    description: 'Clean, contemporary design inspired by Notion, Linear, and Stripe',
+    colors: {
+      // Background colors
+      bgPrimary: 'bg-modern-bg-primary',
+      bgSecondary: 'bg-gradient-to-r from-modern-accent-primary to-modern-accent-secondary',
+      bgCard: 'bg-modern-bg-card',
+      bgCardHover: 'hover:shadow-modern-md hover:border-modern-border-medium',
+      
+      // Text colors
+      textPrimary: 'text-modern-text-primary',
+      textSecondary: 'text-modern-text-secondary',
+      textAccent: 'text-modern-accent-primary',
+      textInverse: 'text-modern-text-inverse',
+      
+      // Button colors
+      btnPrimary: 'bg-modern-accent-primary hover:bg-indigo-600 text-white shadow-modern hover:shadow-modern-md active:scale-[0.98]',
+      btnSecondary: 'bg-modern-bg-tertiary hover:bg-neutral-200 text-modern-text-primary border border-modern-border-light hover:border-modern-border-medium shadow-modern-sm hover:shadow-modern',
+      btnSuccess: 'bg-modern-accent-success hover:bg-emerald-600 text-white shadow-modern',
+      
+      // Stats colors
+      statSuccess: 'text-modern-accent-success',
+      statWarning: 'text-modern-accent-warning',
+      statInfo: 'text-modern-accent-info',
+      statError: 'text-modern-accent-error',
+      
+      // Border colors
+      border: 'border-modern-border-light',
+      borderMedium: 'border-modern-border-medium',
+      borderAccent: 'border-modern-accent-primary',
+    },
+    styles: {
+      card: 'rounded-modern-lg shadow-modern border border-modern-border-light transition-all duration-300 ease-out',
+      button: 'rounded-modern font-medium transition-all duration-200 ease-out transform',
+      input: 'rounded-modern border border-modern-border-light focus:border-modern-accent-primary focus:ring-2 focus:ring-modern-accent-primary/20 bg-modern-bg-secondary text-modern-text-primary placeholder-modern-text-tertiary transition-all duration-200',
+      badge: 'rounded-md px-2.5 py-1 text-modern-xs font-medium tracking-wide',
+      hero: 'rounded-modern-xl shadow-modern-lg border border-modern-border-light bg-gradient-to-br from-white to-neutral-50',
+      section: 'space-y-6 animate-modern-fade-in',
+    }
   }
 };
 
 // Default theme
-export const defaultTheme = 'vibrantGradient';
+export const defaultTheme = 'modernPremium';
 
 // Helper function to get theme by id
 export function getTheme(themeId) {
