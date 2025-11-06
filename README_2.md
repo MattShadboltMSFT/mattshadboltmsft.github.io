@@ -7,8 +7,7 @@ An AFL statistics tracking Progressive Web App (PWA) for junior Under 13's playe
 This application is ready for deployment! Multiple free deployment options available.
 
 **🎯 Quick Deploy Options (All FREE):**
-- **Azure Static Web Apps** (FREE): [Complete Guide →](specs/AZURE_DEPLOYMENT.md) - 100% free, no credit card
-- **GitHub Pages** (FREE): [Enable in Settings →](#deployment) - Simplest free option
+- **GitHub Pages** (FREE): [Enable in Settings →](#deployment) - Recommended: Simplest and integrated
 - **Vercel**: [Deploy to Vercel →](https://vercel.com/new/clone?repository-url=https://github.com/MattShadboltMSFT/mattshadboltmsft.github.io)
 - **Netlify**: [Deploy to Netlify →](https://app.netlify.com/start/deploy?repository=https://github.com/MattShadboltMSFT/mattshadboltmsft.github.io)
 
@@ -135,7 +134,6 @@ Automated workflow is configured in `.github/workflows/deploy.yml`
 3. GitHub Actions will build and deploy automatically
 
 ### Other Options
-- Azure Static Web Apps
 - AWS Amplify
 - Cloudflare Pages
 

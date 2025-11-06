@@ -1,6 +1,6 @@
 # Deployment Guide - Jays Footy Stats
 
-This guide provides step-by-step instructions for deploying the Jays Footy Stats application to various platforms.
+This guide provides step-by-step instructions for deploying the Jays Footy Stats application.
 
 ## Prerequisites
 
@@ -11,34 +11,41 @@ Before deploying, ensure:
 
 ## Quick Links
 
-- 🚀 **[Azure Deployment (FREE)](AZURE_DEPLOYMENT.md)** - Detailed Azure Static Web Apps guide
+- 📄 **GitHub Pages** - Recommended: Simple, free, and integrated (below)
 - ⚡ Vercel - Fast deployment (below)
 - 🌐 Netlify - Alternative option (below)
-- 📄 GitHub Pages - Simple and free (below)
 
 ## Deployment Options
 
-### Option 1: Azure Static Web Apps (FREE - Recommended for Azure users)
+### Option 1: GitHub Pages (Recommended)
 
-**See [AZURE_DEPLOYMENT.md](AZURE_DEPLOYMENT.md) for complete Azure deployment guide.**
+GitHub Pages is free and works well for static sites, with seamless GitHub integration.
 
-Azure Static Web Apps offers a generous free tier perfect for this application:
-- ✅ **100% Free** - No credit card required
-- ✅ **100 GB bandwidth/month** - More than enough
-- ✅ **Automatic CI/CD** - GitHub Actions included
+#### Setup
+
+1. **Enable GitHub Pages**
+   - Go to repository Settings → Pages
+   - Source: "GitHub Actions"
+   - Save
+
+2. **Push to Main**
+   - Push your code to the main branch
+   - Workflow will auto-deploy
+   - Check Actions tab for status
+
+3. **Access your site**
+   - URL: `https://MattShadboltMSFT.github.io/`
+   - Or custom domain if configured
+
+**Workflow File**: `.github/workflows/deploy.yml` ✅ Already configured!
+
+**Note**: GitHub Pages may take a few minutes to go live after first deployment.
+
+**Benefits:**
+- ✅ **100% Free** - Built into GitHub
+- ✅ **Automatic deployment** - Every push to main
 - ✅ **Custom domains** - Free SSL certificates
-- ✅ **PR preview environments** - Test before merging
-
-**Quick Start:**
-1. Go to https://portal.azure.com
-2. Create a resource → "Static Web Apps"
-3. Select Free tier
-4. Connect to GitHub repository
-5. Set app location: `/`
-6. Set output location: `dist`
-7. Deploy!
-
-Configuration files included: `staticwebapp.config.json`, `.github/workflows/azure-static-web-apps.yml`
+- ✅ **CDN included** - Fast worldwide performance
 
 ---
 
@@ -103,7 +110,7 @@ vercel --prod
 
 ---
 
-### Option 2: Netlify
+### Option 3: Netlify
 
 Netlify is another excellent option with great PWA support.
 
@@ -165,91 +172,6 @@ netlify deploy --prod
 - SPA routing redirects
 - Security headers
 - Asset caching rules
-
----
-
-### Option 3: GitHub Pages
-
-GitHub Pages is free and works well for static sites.
-
-#### Setup
-
-1. **Install gh-pages package**
-   ```bash
-   npm install --save-dev gh-pages
-   ```
-
-2. **Update package.json**
-   Add these scripts:
-   ```json
-   "scripts": {
-     "predeploy": "npm run build",
-     "deploy": "gh-pages -d dist"
-   }
-   ```
-
-3. **Update vite.config.js (if needed)**
-   
-   For `username.github.io` repositories, no changes needed (served from root by default).
-   
-   For other repo names, add base URL:
-   ```javascript
-   export default defineConfig({
-     base: '/your-repo-name/',
-     // ... rest of config
-   })
-   ```
-
-4. **Deploy**
-   ```bash
-   npm run deploy
-   ```
-
-5. **Enable GitHub Pages**
-   - Go to repository Settings → Pages
-   - Source: Deploy from a branch
-   - Branch: `gh-pages` → `/ (root)`
-   - Save
-
-6. **Access your site**
-   - URL: `https://MattShadboltMSFT.github.io/`
-
-**Note**: GitHub Pages may take a few minutes to go live after first deployment.
-
----
-
-### Option 4: Azure Static Web Apps
-
-If you prefer Azure:
-
-1. **Install Azure CLI** (if not already installed)
-   ```bash
-   curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-   ```
-
-2. **Login to Azure**
-   ```bash
-   az login
-   ```
-
-3. **Create Static Web App**
-   ```bash
-   az staticwebapp create \
-     --name jays-footy-stats \
-     --resource-group your-resource-group \
-     --source https://github.com/MattShadboltMSFT/mattshadboltmsft.github.io \
-     --location "East US 2" \
-     --branch main \
-     --app-location "/" \
-     --output-location "dist"
-   ```
-
-4. **Or use Azure Portal**
-   - Go to Azure Portal → Create a resource
-   - Search "Static Web Apps" → Create
-   - Link to GitHub repository
-   - Configure build settings
-   - Deploy
 
 ---
 
@@ -389,11 +311,20 @@ For deployment issues:
 
 **For fastest deployment**:
 1. Push code to GitHub (already done ✅)
-2. Go to https://vercel.com
-3. Click "Import Project"
-4. Select your repository
-5. Click "Deploy"
+2. Go to repository Settings → Pages
+3. Source: "GitHub Actions"
+4. Save
+5. Push to main branch to trigger deployment
 6. Done! 🎉
+
+Your app will be live at `https://MattShadboltMSFT.github.io/` in ~2 minutes.
+
+**Alternative - Vercel**:
+1. Go to https://vercel.com
+2. Click "Import Project"
+3. Select your repository
+4. Click "Deploy"
+5. Done! 🎉
 
 Your app will be live in ~2 minutes.
 
