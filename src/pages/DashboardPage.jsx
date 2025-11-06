@@ -244,7 +244,7 @@ export default function DashboardPage() {
 
               <Grid container spacing={3}>
                 {[
-                  { label: 'Total Goals', value: stats.stats.goals, icon: '⚽', color: 'success.main' },
+                  { label: 'Total Goals', value: stats.stats.goals, icon: '🎉', color: 'success.main' },
                   { label: 'Total Kicks', value: stats.stats.kicks, icon: '🦵', color: 'primary.main' },
                   { label: 'Total Marks', value: stats.stats.marks, icon: '🙌', color: 'secondary.main' },
                   { label: 'Total Tackles', value: stats.stats.tackles, icon: '💪', color: 'info.main' },
@@ -310,7 +310,7 @@ export default function DashboardPage() {
                   </Typography>
                   <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                     {[
-                      { label: 'Most Goals', value: stats.personalBests.goals, icon: '⚽' },
+                      { label: 'Most Goals', value: stats.personalBests.goals, icon: '🎉' },
                       { label: 'Most Kicks', value: stats.personalBests.kicks, icon: '🦵' },
                       { label: 'Most Marks', value: stats.personalBests.marks, icon: '🙌' },
                       { label: 'Most Tackles', value: stats.personalBests.tackles, icon: '💪' },

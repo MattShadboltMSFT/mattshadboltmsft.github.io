@@ -92,8 +92,16 @@ export default function HomePage() {
       >
         <Container maxWidth="lg">
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Typography variant="h1" sx={{ fontSize: '3rem' }}>⚽</Typography>
-            <Box>
+                      <img
+                      src="/images/jay.png"
+                      alt="Jay"
+                      style={{
+                        width: '4rem',
+                        height: '4rem',
+                        objectFit: 'contain',
+                        display: 'block'
+                      }} />
+             <Box>
               <Typography variant="h3" fontWeight={700}>
                 Jay's Footy Stats
               </Typography>
