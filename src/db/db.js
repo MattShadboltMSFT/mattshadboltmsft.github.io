@@ -13,7 +13,10 @@ db.version(1).stores({
 // Player model
 export class Player {
   constructor(data = {}) {
-    this.id = data.id;
+    // Only set id if it's provided (for existing players)
+    if (data.id !== undefined) {
+      this.id = data.id;
+    }
     this.name = data.name || '';
     this.teamName = data.teamName || '';
     this.season = data.season || new Date().getFullYear();
@@ -27,7 +30,10 @@ export class Player {
 // Match model
 export class Match {
   constructor(data = {}) {
-    this.id = data.id;
+    // Only set id if it's provided (for existing matches)
+    if (data.id !== undefined) {
+      this.id = data.id;
+    }
     this.playerId = data.playerId || 1; // Default player
     this.date = data.date || new Date().toISOString();
     this.opponent = data.opponent || '';
