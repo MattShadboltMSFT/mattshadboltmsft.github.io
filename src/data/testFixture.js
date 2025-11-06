@@ -58,7 +58,7 @@ function generateStats(result, matchNumber) {
 export function generateTestMatches(playerId) {
   return fixture2025.map((match, index) => ({
     playerId,
-    date: match.date,
+    date: new Date(match.date).toISOString(),
     opponent: match.opponent,
     venue: match.venue,
     position: ['Forward', 'Midfield', 'Defence'][Math.floor(Math.random() * 3)],
