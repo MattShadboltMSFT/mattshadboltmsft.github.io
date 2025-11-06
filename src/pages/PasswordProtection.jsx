@@ -84,7 +84,7 @@ export default function PasswordProtection({ onAuthenticated }) {
                     }}
                   >
                     <img
-                      src="src/images/jay.png"
+                      src="./src/images/jay.png"
                       alt="Jay"
                       style={{
                         width: '4rem',
