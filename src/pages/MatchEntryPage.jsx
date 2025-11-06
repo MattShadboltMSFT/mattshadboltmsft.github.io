@@ -4,10 +4,10 @@ import { useApp } from '../context/AppContext';
 import { createMatch, updateMatch, getMatch } from '../services/matchService';
 
 export default function MatchEntryPage() {
-  const { player } = useApp();
+  const { player, loading } = useApp();
   const navigate = useNavigate();
   const { id } = useParams();
-  const isEditing = id !== 'new';
+  const isEditing = id && id !== 'new';
 
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split('T')[0],
@@ -74,6 +74,11 @@ export default function MatchEntryPage() {
       return;
     }
 
+    if (!player || !player.id) {
+      alert('Player data is not loaded. Please wait and try again.');
+      return;
+    }
+
     setSaving(true);
     try {
       const matchData = {
@@ -120,6 +125,14 @@ export default function MatchEntryPage() {
       </div>
     </div>
   );
+
+  if (loading || !player) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-xl">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100">

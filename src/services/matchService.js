@@ -2,6 +2,10 @@ import { db, Match } from '../db/db';
 
 // Create a new match
 export async function createMatch(matchData) {
+  if (!matchData.playerId || typeof matchData.playerId !== 'number') {
+    throw new Error('Invalid player ID. Please ensure player data is loaded.');
+  }
+  
   const match = new Match(matchData);
   match.createdAt = new Date().toISOString();
   match.updatedAt = new Date().toISOString();
@@ -11,6 +15,10 @@ export async function createMatch(matchData) {
 
 // Get all matches for a player
 export async function getAllMatches(playerId, includeTestData = true) {
+  if (!playerId || typeof playerId !== 'number') {
+    throw new Error('Invalid player ID');
+  }
+  
   let query = db.matches.where('playerId').equals(playerId);
   
   const matches = await query.toArray();
