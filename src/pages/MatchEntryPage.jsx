@@ -1,13 +1,70 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
-import { useTheme } from '../context/ThemeContext';
 import { createMatch, updateMatch, getMatch } from '../services/matchService';
-import ThemeSelector from '../components/ThemeSelector';
+import {
+  Box,
+  Container,
+  Typography,
+  TextField,
+  Button,
+  Card,
+  CardContent,
+  Grid,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  IconButton,
+  CircularProgress,
+  Fade,
+  AppBar,
+  Toolbar
+} from '@mui/material';
+
+const StatCounter = ({ label, statName, value, onChange }) => (
+  <Card sx={{ height: '100%' }}>
+    <CardContent>
+      <Typography variant="body2" color="text.secondary" gutterBottom align="center">
+        {label}
+      </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 2 }}>
+        <IconButton
+          onClick={() => onChange(statName, -1)}
+          sx={{
+            bgcolor: 'error.light',
+            color: 'error.dark',
+            width: 48,
+            height: 48,
+            '&:hover': { bgcolor: 'error.main', color: 'white' },
+            transition: 'all 0.2s'
+          }}
+        >
+          <Typography variant="h5" fontWeight={700}>−</Typography>
+        </IconButton>
+        <Typography variant="h3" fontWeight={700} sx={{ minWidth: 60, textAlign: 'center' }}>
+          {value}
+        </Typography>
+        <IconButton
+          onClick={() => onChange(statName, 1)}
+          sx={{
+            bgcolor: 'success.light',
+            color: 'success.dark',
+            width: 48,
+            height: 48,
+            '&:hover': { bgcolor: 'success.main', color: 'white' },
+            transition: 'all 0.2s'
+          }}
+        >
+          <Typography variant="h5" fontWeight={700}>+</Typography>
+        </IconButton>
+      </Box>
+    </CardContent>
+  </Card>
+);
 
 export default function MatchEntryPage() {
   const { player, loading } = useApp();
-  const { theme } = useTheme();
   const navigate = useNavigate();
   const { id } = useParams();
   const isEditing = id && id !== 'new';
@@ -104,212 +161,286 @@ export default function MatchEntryPage() {
     }
   };
 
-  const StatCounter = ({ label, statName, value }) => (
-    <div className={`${theme.colors.bgCard} ${theme.styles.card} p-4 border ${theme.colors.border}`}>
-      <p className={`text-sm ${theme.colors.textSecondary} mb-2`}>{label}</p>
-      <div className="flex items-center justify-between">
-        <button
-          type="button"
-          onClick={() => updateStat(statName, -1)}
-          className={`${theme.colors.statWarning} w-12 h-12 rounded-full text-2xl font-bold ${theme.styles.button}`}
-        >
-          -
-        </button>
-        <span className={`text-4xl font-bold ${theme.colors.textPrimary} min-w-[60px] text-center`}>
-          {value}
-        </span>
-        <button
-          type="button"
-          onClick={() => updateStat(statName, 1)}
-          className={`${theme.colors.statSuccess} w-12 h-12 rounded-full text-2xl font-bold ${theme.styles.button}`}
-        >
-          +
-        </button>
-      </div>
-    </div>
-  );
-
   if (loading || !player) {
     return (
-      <div className={`min-h-screen ${theme.colors.bgPrimary} flex items-center justify-center`}>
-        <div className={`text-xl ${theme.colors.textPrimary}`}>Loading...</div>
-      </div>
+      <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <CircularProgress size={60} />
+      </Box>
     );
   }
 
   return (
-    <div className={`min-h-screen ${theme.colors.bgPrimary}`}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', pb: 4 }}>
       {/* Header */}
-      <div className={`${theme.colors.bgSecondary} ${theme.colors.textPrimary} p-4 shadow-2xl`}>
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <button
+      <AppBar position="static" elevation={1}>
+        <Toolbar>
+          <Button
             onClick={() => navigate(-1)}
-            className={`${theme.colors.textPrimary} hover:opacity-80 transition-opacity`}
+            sx={{ mr: 2, color: 'white' }}
           >
             ← Back
-          </button>
-          <h1 className="text-xl font-bold">
-            {isEditing ? 'Edit Match' : 'New Match'}
-          </h1>
-          <ThemeSelector />
-        </div>
-      </div>
+          </Button>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            {isEditing ? 'Edit Match' : 'Add New Match'}
+          </Typography>
+          <Typography variant="body2">⚽</Typography>
+        </Toolbar>
+      </AppBar>
 
-      {/* Form */}
-      <form onSubmit={handleSubmit} className="max-w-4xl mx-auto p-4 space-y-6">
-        {/* Match Details */}
-        <div className={`${theme.colors.bgCard} border ${theme.colors.border} ${theme.styles.card} p-6`}>
-          <h2 className={`text-xl font-bold mb-4 ${theme.colors.textPrimary}`}>Match Details</h2>
-          
-          <div className="space-y-4">
-            <div>
-              <label className={`block text-sm font-medium ${theme.colors.textSecondary} mb-1`}>
-                Date
-              </label>
-              <input
-                type="date"
-                value={formData.date}
-                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                className={`w-full ${theme.colors.bgCard} border ${theme.colors.border} ${theme.styles.input} px-4 py-2 ${theme.colors.textPrimary}`}
-                required
-              />
-            </div>
+      <Container maxWidth="md" sx={{ mt: 4 }}>
+        <form onSubmit={handleSubmit}>
+          <Fade in={true} timeout={600}>
+            <Box sx={{ mb: 3 }}>
+              {/* Match Details */}
+              <Card>
+                <CardContent sx={{ p: 4 }}>
+                  <Typography variant="h5" gutterBottom fontWeight={700} sx={{ mb: 3 }}>
+                    Match Details
+                  </Typography>
+                  
+                  <Grid container spacing={3}>
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        label="Match Date"
+                        type="date"
+                        value={formData.date}
+                        onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                        required
+                        InputLabelProps={{ shrink: true }}
+                      />
+                    </Grid>
 
-            <div>
-              <label className={`block text-sm font-medium ${theme.colors.textSecondary} mb-1`}>
-                Opponent *
-              </label>
-              <input
-                type="text"
-                value={formData.opponent}
-                onChange={(e) => setFormData({ ...formData, opponent: e.target.value })}
-                className={`w-full ${theme.colors.bgCard} border ${theme.colors.border} ${theme.styles.input} px-4 py-2 ${theme.colors.textPrimary}`}
-                placeholder="e.g., Hampton Rovers"
-                required
-              />
-            </div>
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        label="Opponent"
+                        value={formData.opponent}
+                        onChange={(e) => setFormData({ ...formData, opponent: e.target.value })}
+                        placeholder="e.g., Hampton Rovers"
+                        required
+                      />
+                    </Grid>
 
-            <div>
-              <label className={`block text-sm font-medium ${theme.colors.textSecondary} mb-1`}>
-                Venue
-              </label>
-              <input
-                type="text"
-                value={formData.venue}
-                onChange={(e) => setFormData({ ...formData, venue: e.target.value })}
-                className={`w-full ${theme.colors.bgCard} border ${theme.colors.border} ${theme.styles.input} px-4 py-2 ${theme.colors.textPrimary}`}
-                placeholder="e.g., President Park"
-              />
-            </div>
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        label="Venue"
+                        value={formData.venue}
+                        onChange={(e) => setFormData({ ...formData, venue: e.target.value })}
+                        placeholder="e.g., President Park"
+                      />
+                    </Grid>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className={`block text-sm font-medium ${theme.colors.textSecondary} mb-1`}>
-                  Position
-                </label>
-                <select
-                  value={formData.position}
-                  onChange={(e) => setFormData({ ...formData, position: e.target.value })}
-                  className={`w-full ${theme.colors.bgCard} border ${theme.colors.border} ${theme.styles.input} px-4 py-2 ${theme.colors.textPrimary}`}
-                >
-                  <option value="">Select position</option>
-                  <option value="Forward">Forward</option>
-                  <option value="Midfield">Midfield</option>
-                  <option value="Defence">Defence</option>
-                  <option value="Ruck">Ruck</option>
-                </select>
-              </div>
+                    <Grid item xs={12} sm={6}>
+                      <FormControl fullWidth>
+                        <InputLabel>Position</InputLabel>
+                        <Select
+                          value={formData.position}
+                          label="Position"
+                          onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+                        >
+                          <MenuItem value="">Select position</MenuItem>
+                          <MenuItem value="Forward">Forward</MenuItem>
+                          <MenuItem value="Midfield">Midfield</MenuItem>
+                          <MenuItem value="Defence">Defence</MenuItem>
+                          <MenuItem value="Ruck">Ruck</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </Grid>
 
-              <div>
-                <label className={`block text-sm font-medium ${theme.colors.textSecondary} mb-1`}>
-                  Quarters Played
-                </label>
-                <select
-                  value={formData.quartersPlayed}
-                  onChange={(e) => setFormData({ ...formData, quartersPlayed: parseInt(e.target.value) })}
-                  className={`w-full ${theme.colors.bgCard} border ${theme.colors.border} ${theme.styles.input} px-4 py-2 ${theme.colors.textPrimary}`}
-                >
-                  <option value="1">1 Quarter</option>
-                  <option value="2">2 Quarters</option>
-                  <option value="3">3 Quarters</option>
-                  <option value="4">4 Quarters</option>
-                </select>
-              </div>
-            </div>
+                    <Grid item xs={12} sm={6}>
+                      <FormControl fullWidth>
+                        <InputLabel>Quarters Played</InputLabel>
+                        <Select
+                          value={formData.quartersPlayed}
+                          label="Quarters Played"
+                          onChange={(e) => setFormData({ ...formData, quartersPlayed: parseInt(e.target.value) })}
+                        >
+                          <MenuItem value={1}>1 Quarter</MenuItem>
+                          <MenuItem value={2}>2 Quarters</MenuItem>
+                          <MenuItem value={3}>3 Quarters</MenuItem>
+                          <MenuItem value={4}>4 Quarters</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </Grid>
 
-            <div>
-              <label className={`block text-sm font-medium ${theme.colors.textSecondary} mb-1`}>
-                Result
-              </label>
-              <select
-                value={formData.result}
-                onChange={(e) => setFormData({ ...formData, result: e.target.value })}
-                className={`w-full ${theme.colors.bgCard} border ${theme.colors.border} ${theme.styles.input} px-4 py-2 ${theme.colors.textPrimary}`}
-              >
-                <option value="Unknown">Unknown</option>
-                <option value="Win">Win</option>
-                <option value="Loss">Loss</option>
-                <option value="Draw">Draw</option>
-              </select>
-            </div>
-          </div>
-        </div>
+                    <Grid item xs={12}>
+                      <FormControl fullWidth>
+                        <InputLabel>Result</InputLabel>
+                        <Select
+                          value={formData.result}
+                          label="Result"
+                          onChange={(e) => setFormData({ ...formData, result: e.target.value })}
+                        >
+                          <MenuItem value="Unknown">Unknown</MenuItem>
+                          <MenuItem value="Win">Win</MenuItem>
+                          <MenuItem value="Loss">Loss</MenuItem>
+                          <MenuItem value="Draw">Draw</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </Grid>
+                  </Grid>
+                </CardContent>
+              </Card>
+            </Box>
+          </Fade>
 
-        {/* Stats Counters */}
-        <div className={`${theme.colors.bgCard} border ${theme.colors.border} ${theme.styles.card} p-6`}>
-          <h2 className={`text-xl font-bold mb-4 ${theme.colors.textPrimary}`}>Statistics</h2>
-          
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <StatCounter label="Kicks" statName="kicks" value={formData.stats.kicks} />
-              <StatCounter label="Handballs" statName="handballs" value={formData.stats.handballs} />
-            </div>
+          {/* Statistics */}
+          <Fade in={true} timeout={800}>
+            <Card sx={{ mb: 3 }}>
+              <CardContent sx={{ p: 4 }}>
+                <Typography variant="h5" gutterBottom fontWeight={700} sx={{ mb: 3 }}>
+                  Statistics
+                </Typography>
 
-            <div className="grid grid-cols-2 gap-4">
-              <StatCounter label="Marks" statName="marks" value={formData.stats.marks} />
-              <StatCounter label="Tackles" statName="tackles" value={formData.stats.tackles} />
-            </div>
+                <Grid container spacing={2}>
+                  <Grid item xs={6}>
+                    <StatCounter 
+                      label="Kicks" 
+                      statName="kicks" 
+                      value={formData.stats.kicks}
+                      onChange={updateStat}
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <StatCounter 
+                      label="Handballs" 
+                      statName="handballs" 
+                      value={formData.stats.handballs}
+                      onChange={updateStat}
+                    />
+                  </Grid>
 
-            <div className="grid grid-cols-2 gap-4">
-              <StatCounter label="Goals" statName="goals" value={formData.stats.goals} />
-              <StatCounter label="Behinds" statName="behinds" value={formData.stats.behinds} />
-            </div>
+                  <Grid item xs={6}>
+                    <StatCounter 
+                      label="Marks" 
+                      statName="marks" 
+                      value={formData.stats.marks}
+                      onChange={updateStat}
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <StatCounter 
+                      label="Tackles" 
+                      statName="tackles" 
+                      value={formData.stats.tackles}
+                      onChange={updateStat}
+                    />
+                  </Grid>
 
-            <div className="grid grid-cols-3 gap-4">
-              <StatCounter label="Spoils" statName="spoils" value={formData.stats.spoils} />
-              <StatCounter label="Smothers" statName="smothers" value={formData.stats.smothers} />
-              <StatCounter label="Interceptions" statName="interceptions" value={formData.stats.interceptions} />
-            </div>
+                  <Grid item xs={6}>
+                    <StatCounter 
+                      label="Goals" 
+                      statName="goals" 
+                      value={formData.stats.goals}
+                      onChange={updateStat}
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <StatCounter 
+                      label="Behinds" 
+                      statName="behinds" 
+                      value={formData.stats.behinds}
+                      onChange={updateStat}
+                    />
+                  </Grid>
 
-            <div className="grid grid-cols-2 gap-4">
-              <StatCounter label="Frees For" statName="freesFor" value={formData.stats.freesFor} />
-              <StatCounter label="Frees Against" statName="freesAgainst" value={formData.stats.freesAgainst} />
-            </div>
-          </div>
-        </div>
+                  <Grid item xs={4}>
+                    <StatCounter 
+                      label="Spoils" 
+                      statName="spoils" 
+                      value={formData.stats.spoils}
+                      onChange={updateStat}
+                    />
+                  </Grid>
+                  <Grid item xs={4}>
+                    <StatCounter 
+                      label="Smothers" 
+                      statName="smothers" 
+                      value={formData.stats.smothers}
+                      onChange={updateStat}
+                    />
+                  </Grid>
+                  <Grid item xs={4}>
+                    <StatCounter 
+                      label="Intercepts" 
+                      statName="interceptions" 
+                      value={formData.stats.interceptions}
+                      onChange={updateStat}
+                    />
+                  </Grid>
 
-        {/* Notes */}
-        <div className={`${theme.colors.bgCard} border ${theme.colors.border} ${theme.styles.card} p-6`}>
-          <h2 className={`text-xl font-bold mb-4 ${theme.colors.textPrimary}`}>Notes (Optional)</h2>
-          <textarea
-            value={formData.notes}
-            onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-            className={`w-full ${theme.colors.bgCard} border ${theme.colors.border} ${theme.styles.input} px-4 py-2 h-24 ${theme.colors.textPrimary}`}
-            placeholder="Add any additional notes about this match..."
-          />
-        </div>
+                  <Grid item xs={6}>
+                    <StatCounter 
+                      label="Frees For" 
+                      statName="freesFor" 
+                      value={formData.stats.freesFor}
+                      onChange={updateStat}
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <StatCounter 
+                      label="Frees Against" 
+                      statName="freesAgainst" 
+                      value={formData.stats.freesAgainst}
+                      onChange={updateStat}
+                    />
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
+          </Fade>
 
-        {/* Save Button */}
-        <div className="sticky bottom-4">
-          <button
-            type="submit"
-            disabled={saving}
-            className={`w-full ${theme.colors.btnPrimary} ${theme.colors.textPrimary} py-4 px-6 ${theme.styles.button} text-xl font-bold disabled:opacity-50`}
-          >
-            {saving ? 'Saving...' : (isEditing ? 'Update Match' : 'Save Match')}
-          </button>
-        </div>
-      </form>
-    </div>
+          {/* Notes */}
+          <Fade in={true} timeout={1000}>
+            <Card sx={{ mb: 3 }}>
+              <CardContent sx={{ p: 4 }}>
+                <Typography variant="h5" gutterBottom fontWeight={700} sx={{ mb: 2 }}>
+                  Notes (Optional)
+                </Typography>
+                <TextField
+                  fullWidth
+                  multiline
+                  rows={4}
+                  value={formData.notes}
+                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                  placeholder="Add any additional notes about this match..."
+                />
+              </CardContent>
+            </Card>
+          </Fade>
+
+          {/* Save Button */}
+          <Box sx={{ position: 'sticky', bottom: 16 }}>
+            <Button
+              type="submit"
+              variant="contained"
+              size="large"
+              fullWidth
+              disabled={saving}
+              sx={{
+                py: 2,
+                fontSize: '1.1rem',
+                fontWeight: 700,
+                boxShadow: 4,
+                '&:hover': {
+                  boxShadow: 6,
+                }
+              }}
+            >
+              {saving ? (
+                <>
+                  <CircularProgress size={24} sx={{ mr: 1, color: 'white' }} />
+                  Saving...
+                </>
+              ) : (
+                isEditing ? '✏️ Update Match' : '💾 Save Match'
+              )}
+            </Button>
+          </Box>
+        </form>
+      </Container>
+    </Box>
   );
 }

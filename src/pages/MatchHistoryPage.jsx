@@ -1,16 +1,36 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
-import { useTheme } from '../context/ThemeContext';
 import { getAllMatches, deleteMatch } from '../services/matchService';
-import ThemeSelector from '../components/ThemeSelector';
+import { exportToPDF, exportToCSV } from '../services/exportService';
+import {
+  Box,
+  Container,
+  Typography,
+  Button,
+  Card,
+  CardContent,
+  Grid,
+  Chip,
+  CircularProgress,
+  Fade,
+  AppBar,
+  Toolbar,
+  TextField,
+  InputAdornment,
+  Menu,
+  MenuItem,
+  Divider
+} from '@mui/material';
 
 export default function MatchHistoryPage() {
   const { player } = useApp();
-  const { theme } = useTheme();
   const navigate = useNavigate();
   const [matches, setMatches] = useState([]);
+  const [filteredMatches, setFilteredMatches] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [exportAnchor, setExportAnchor] = useState(null);
 
   useEffect(() => {
     async function loadMatches() {
@@ -19,6 +39,7 @@ export default function MatchHistoryPage() {
       try {
         const allMatches = await getAllMatches(player.id);
         setMatches(allMatches);
+        setFilteredMatches(allMatches);
       } catch (error) {
         console.error('Failed to load matches:', error);
       } finally {
@@ -28,6 +49,19 @@ export default function MatchHistoryPage() {
 
     loadMatches();
   }, [player]);
+
+  useEffect(() => {
+    if (searchTerm) {
+      const filtered = matches.filter(match =>
+        match.opponent.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        match.venue?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        match.position?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredMatches(filtered);
+    } else {
+      setFilteredMatches(matches);
+    }
+  }, [searchTerm, matches]);
 
   const handleDelete = async (matchId) => {
     if (window.confirm('Are you sure you want to delete this match? This cannot be undone.')) {
@@ -40,155 +74,243 @@ export default function MatchHistoryPage() {
     }
   };
 
+  const handleExportPDF = () => {
+    exportToPDF(matches, player);
+    setExportAnchor(null);
+  };
+
+  const handleExportCSV = () => {
+    exportToCSV(matches, player);
+    setExportAnchor(null);
+  };
+
   if (loading) {
     return (
-      <div className={`min-h-screen ${theme.colors.bgPrimary} flex items-center justify-center`}>
-        <div className={`text-xl ${theme.colors.textPrimary}`}>Loading...</div>
-      </div>
+      <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <CircularProgress size={60} />
+      </Box>
     );
   }
 
   return (
-    <div className={`min-h-screen ${theme.colors.bgPrimary}`}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', pb: 4 }}>
       {/* Header */}
-      <div className={`${theme.colors.bgSecondary} ${theme.colors.textPrimary} p-4 shadow-2xl`}>
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <button
+      <AppBar position="static" elevation={1}>
+        <Toolbar>
+          <Button
             onClick={() => navigate('/')}
-            className={`${theme.colors.textPrimary} hover:opacity-80 transition-opacity`}
+            sx={{ mr: 2, color: 'white' }}
           >
             ← Home
-          </button>
-          <h1 className="text-xl font-bold">Match History</h1>
-          <div className="flex items-center gap-2">
-            <Link
-              to="/match/new"
-              className={`${theme.colors.textPrimary} hover:opacity-80 transition-opacity`}
-            >
-              + New
-            </Link>
-            <ThemeSelector />
-          </div>
-        </div>
-      </div>
+          </Button>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            Match History
+          </Typography>
+          <Button
+            component={RouterLink}
+            to="/match/new"
+            variant="contained"
+            color="secondary"
+            size="small"
+            sx={{ mr: 1 }}
+          >
+            ➕ New
+          </Button>
+          <Typography variant="body2">📋</Typography>
+        </Toolbar>
+      </AppBar>
 
-      {/* Content */}
-      <div className="max-w-4xl mx-auto p-4">
-        {matches.length === 0 ? (
-          <div className={`${theme.colors.bgCard} border ${theme.colors.border} ${theme.styles.card} p-8 text-center`}>
-            <p className={`${theme.colors.textSecondary} mb-4`}>No matches recorded yet</p>
-            <Link
-              to="/match/new"
-              className={`inline-block ${theme.colors.btnPrimary} ${theme.colors.textPrimary} py-2 px-6 ${theme.styles.button} font-semibold`}
-            >
-              Add Your First Match
-            </Link>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {matches.map((match) => (
-              <div
-                key={match.id}
-                className={`${theme.colors.bgCard} border ${theme.colors.border} ${theme.styles.card} p-4 ${theme.colors.bgCardHover} transition-all duration-200`}
+      <Container maxWidth="lg" sx={{ mt: 4 }}>
+        {/* Search and Export */}
+        <Box sx={{ mb: 3, display: 'flex', gap: 2, alignItems: 'center' }}>
+          <TextField
+            fullWidth
+            variant="outlined"
+            placeholder="Search matches by opponent, venue, or position..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">🔍</InputAdornment>
+              ),
+            }}
+          />
+          {matches.length > 0 && (
+            <>
+              <Button
+                variant="outlined"
+                onClick={(e) => setExportAnchor(e.currentTarget)}
+                sx={{ minWidth: 120 }}
               >
-                <div className="flex justify-between items-start mb-3">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className={`font-bold text-lg ${theme.colors.textPrimary}`}>
-                        vs {match.opponent}
-                      </h3>
-                      {match.isTestData && (
-                        <span className={`text-xs ${theme.colors.statWarning} px-2 py-1 ${theme.styles.badge}`}>
-                          Test Data
-                        </span>
-                      )}
-                    </div>
-                    <p className={`text-sm ${theme.colors.textSecondary}`}>
-                      {new Date(match.date).toLocaleDateString('en-US', {
-                        weekday: 'short',
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric'
-                      })}
-                    </p>
-                    {match.venue && (
-                      <p className={`text-sm ${theme.colors.textSecondary}`}>{match.venue}</p>
-                    )}
-                    {match.position && (
-                      <p className={`text-xs ${theme.colors.textSecondary} mt-1`}>{match.position}</p>
-                    )}
-                  </div>
-                  
-                  <div className="text-right">
-                    <div className={`font-bold text-sm px-3 py-1 ${theme.styles.badge} ${
-                      match.result === 'Win' ? theme.colors.statSuccess :
-                      match.result === 'Loss' ? theme.colors.statWarning :
-                      match.result === 'Draw' ? theme.colors.statInfo :
-                      theme.colors.textSecondary
-                    }`}>
-                      {match.result}
-                    </div>
-                  </div>
-                </div>
+                📥 Export
+              </Button>
+              <Menu
+                anchorEl={exportAnchor}
+                open={Boolean(exportAnchor)}
+                onClose={() => setExportAnchor(null)}
+              >
+                <MenuItem onClick={handleExportPDF}>Export as PDF</MenuItem>
+                <MenuItem onClick={handleExportCSV}>Export as CSV</MenuItem>
+              </Menu>
+            </>
+          )}
+        </Box>
 
-                {/* Stats Summary */}
-                <div className="grid grid-cols-4 gap-2 mb-3 text-center text-sm">
-                  <div className={`${theme.colors.bgCard} ${theme.styles.card} p-2`}>
-                    <p className={`font-bold ${theme.colors.statSuccess} text-lg`}>
-                      {match.stats.goals}
-                    </p>
-                    <p className={`${theme.colors.textSecondary} text-xs`}>Goals</p>
-                  </div>
-                  <div className={`${theme.colors.bgCard} ${theme.styles.card} p-2`}>
-                    <p className={`font-bold ${theme.colors.textPrimary} text-lg`}>
-                      {match.stats.kicks}
-                    </p>
-                    <p className={`${theme.colors.textSecondary} text-xs`}>Kicks</p>
-                  </div>
-                  <div className={`${theme.colors.bgCard} ${theme.styles.card} p-2`}>
-                    <p className={`font-bold ${theme.colors.textPrimary} text-lg`}>
-                      {match.stats.marks}
-                    </p>
-                    <p className={`${theme.colors.textSecondary} text-xs`}>Marks</p>
-                  </div>
-                  <div className={`${theme.colors.bgCard} ${theme.styles.card} p-2`}>
-                    <p className={`font-bold ${theme.colors.textPrimary} text-lg`}>
-                      {match.stats.tackles}
-                    </p>
-                    <p className={`${theme.colors.textSecondary} text-xs`}>Tackles</p>
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <div className={`flex gap-2 pt-3 border-t ${theme.colors.border}`}>
-                  <Link
-                    to={`/match/${match.id}/view`}
-                    className={`flex-1 text-center py-2 px-4 ${theme.colors.btnSecondary} ${theme.colors.textPrimary} ${theme.styles.button} text-sm font-medium`}
+        {/* Matches List */}
+        {filteredMatches.length === 0 ? (
+          <Fade in={true}>
+            <Card>
+              <CardContent sx={{ textAlign: 'center', py: 6 }}>
+                <Typography variant="h6" color="text.secondary" gutterBottom>
+                  {searchTerm ? 'No matches found' : 'No matches recorded yet'}
+                </Typography>
+                {!searchTerm && (
+                  <Button
+                    component={RouterLink}
+                    to="/match/new"
+                    variant="contained"
+                    sx={{ mt: 2 }}
                   >
-                    View Details
-                  </Link>
-                  {!match.isTestData && (
-                    <>
-                      <Link
-                        to={`/match/${match.id}`}
-                        className={`flex-1 text-center py-2 px-4 ${theme.colors.btnPrimary} ${theme.colors.textPrimary} ${theme.styles.button} text-sm font-medium`}
-                      >
-                        Edit
-                      </Link>
-                      <button
-                        onClick={() => handleDelete(match.id)}
-                        className={`flex-1 py-2 px-4 ${theme.colors.statWarning} ${theme.styles.button} text-sm font-medium`}
-                      >
-                        Delete
-                      </button>
-                    </>
-                  )}
-                </div>
-              </div>
+                    Add Your First Match
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+          </Fade>
+        ) : (
+          <Grid container spacing={3}>
+            {filteredMatches.map((match, index) => (
+              <Grid item xs={12} key={match.id}>
+                <Fade in={true} timeout={300 + index * 100}>
+                  <Card
+                    sx={{
+                      transition: 'all 0.3s ease',
+                      '&:hover': {
+                        transform: 'translateY(-4px)',
+                        boxShadow: 6,
+                      }
+                    }}
+                  >
+                    <CardContent sx={{ p: 3 }}>
+                      {/* Header */}
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', mb: 2 }}>
+                        <Box sx={{ flex: 1 }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                            <Typography variant="h6" fontWeight={700}>
+                              vs {match.opponent}
+                            </Typography>
+                            {match.isTestData && (
+                              <Chip label="Test Data" size="small" color="warning" />
+                            )}
+                          </Box>
+                          <Typography variant="body2" color="text.secondary">
+                            {new Date(match.date).toLocaleDateString('en-US', {
+                              weekday: 'short',
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric'
+                            })}
+                          </Typography>
+                          {match.venue && (
+                            <Typography variant="body2" color="text.secondary">
+                              {match.venue}
+                            </Typography>
+                          )}
+                          {match.position && (
+                            <Chip 
+                              label={match.position} 
+                              size="small" 
+                              sx={{ mt: 1 }} 
+                              variant="outlined"
+                            />
+                          )}
+                        </Box>
+                        
+                        <Chip
+                          label={match.result}
+                          color={
+                            match.result === 'Win' ? 'success' :
+                            match.result === 'Loss' ? 'error' :
+                            match.result === 'Draw' ? 'info' : 'default'
+                          }
+                          sx={{ fontWeight: 600 }}
+                        />
+                      </Box>
+
+                      {/* Stats Summary */}
+                      <Grid container spacing={1} sx={{ mb: 2 }}>
+                        {[
+                          { label: 'Goals', value: match.stats.goals, color: 'success.main' },
+                          { label: 'Kicks', value: match.stats.kicks, color: 'primary.main' },
+                          { label: 'Marks', value: match.stats.marks, color: 'secondary.main' },
+                          { label: 'Tackles', value: match.stats.tackles, color: 'info.main' }
+                        ].map((stat) => (
+                          <Grid item xs={3} key={stat.label}>
+                            <Card variant="outlined" sx={{ textAlign: 'center', p: 1.5, bgcolor: 'background.default' }}>
+                              <Typography variant="h6" fontWeight={700} sx={{ color: stat.color }}>
+                                {stat.value}
+                              </Typography>
+                              <Typography variant="caption" color="text.secondary">
+                                {stat.label}
+                              </Typography>
+                            </Card>
+                          </Grid>
+                        ))}
+                      </Grid>
+
+                      <Divider sx={{ my: 2 }} />
+
+                      {/* Actions */}
+                      <Box sx={{ display: 'flex', gap: 1 }}>
+                        <Button
+                          component={RouterLink}
+                          to={`/match/${match.id}/view`}
+                          variant="outlined"
+                          fullWidth
+                          size="small"
+                        >
+                          👁️ View Details
+                        </Button>
+                        {!match.isTestData && (
+                          <>
+                            <Button
+                              component={RouterLink}
+                              to={`/match/${match.id}`}
+                              variant="contained"
+                              fullWidth
+                              size="small"
+                            >
+                              ✏️ Edit
+                            </Button>
+                            <Button
+                              onClick={() => handleDelete(match.id)}
+                              variant="outlined"
+                              color="error"
+                              fullWidth
+                              size="small"
+                            >
+                              🗑️ Delete
+                            </Button>
+                          </>
+                        )}
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Fade>
+              </Grid>
             ))}
-          </div>
+          </Grid>
         )}
-      </div>
-    </div>
+
+        {/* Summary */}
+        {filteredMatches.length > 0 && (
+          <Box sx={{ mt: 4, textAlign: 'center' }}>
+            <Typography variant="body2" color="text.secondary">
+              Showing {filteredMatches.length} of {matches.length} matches
+            </Typography>
+          </Box>
+        )}
+      </Container>
+    </Box>
   );
 }

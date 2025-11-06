@@ -1,8 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { getSeasonStats, getAllMatches } from '../services/matchService';
 import { hasTestData, loadTestData, clearAllTestData } from '../services/testDataService';
+import {
+  Box,
+  Container,
+  Typography,
+  Button,
+  Card,
+  CardContent,
+  Grid,
+  Alert,
+  CircularProgress,
+  Chip,
+  Fade,
+  Divider
+} from '@mui/material';
 
 export default function HomePage() {
   const { player } = useApp();
@@ -38,7 +52,7 @@ export default function HomePage() {
     try {
       const count = await loadTestData(player.id);
       alert(`Loaded ${count} test matches successfully!`);
-      window.location.reload(); // Refresh to show new data
+      window.location.reload();
     } catch (error) {
       alert(error.message);
     }
@@ -49,7 +63,7 @@ export default function HomePage() {
       try {
         const count = await clearAllTestData();
         alert(`Cleared ${count} test matches successfully!`);
-        window.location.reload(); // Refresh to show updated data
+        window.location.reload();
       } catch (error) {
         alert('Failed to clear test data: ' + error.message);
       }
@@ -58,189 +72,319 @@ export default function HomePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-dark-bg flex items-center justify-center">
-        <div className="text-xl text-white">Loading...</div>
-      </div>
+      <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <CircularProgress size={60} />
+      </Box>
     );
   }
 
   return (
-    <div className="min-h-screen bg-dark-bg">
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', pb: 4 }}>
       {/* Header */}
-      <div className="bg-gradient-to-r from-afl-navy via-afl-blue to-afl-blue-light text-white p-6 shadow-2xl">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl font-bold">Jays Footy Stats</h1>
-          <p className="text-sm opacity-90 mt-1">
-            {player?.teamName} - Season {player?.season}
-          </p>
-        </div>
-      </div>
+      <Box
+        sx={{
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          color: 'white',
+          py: 4,
+          mb: 4,
+          boxShadow: 3
+        }}
+      >
+        <Container maxWidth="lg">
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Typography variant="h1" sx={{ fontSize: '3rem' }}>⚽</Typography>
+            <Box>
+              <Typography variant="h3" fontWeight={700}>
+                Jay's Footy Stats
+              </Typography>
+              <Typography variant="body1" sx={{ opacity: 0.9 }}>
+                {player?.teamName} • Season {player?.season}
+              </Typography>
+            </Box>
+          </Box>
+        </Container>
+      </Box>
 
-      {/* Main Content */}
-      <div className="max-w-4xl mx-auto p-4 space-y-6">
-        {/* Quick Action */}
-        <div>
-          <Link
+      <Container maxWidth="lg">
+        {/* Hero Section - Add New Match */}
+        <Fade in={true} timeout={600}>
+          <Button
+            component={RouterLink}
             to="/match/new"
-            className="block w-full bg-gradient-to-r from-afl-accent to-red-600 text-white py-4 px-6 rounded-xl text-center text-xl font-bold shadow-xl hover:shadow-2xl hover:from-red-600 hover:to-afl-accent transition-all duration-200 transform hover:scale-[1.02]"
+            variant="contained"
+            size="large"
+            fullWidth
+            sx={{
+              py: 3,
+              fontSize: '1.25rem',
+              fontWeight: 700,
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              mb: 3,
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                transform: 'translateY(-2px)',
+                boxShadow: '0 10px 20px -5px rgba(102, 126, 234, 0.4)',
+              }
+            }}
           >
-            + New Match
-          </Link>
-        </div>
+            ➕ Add New Match
+          </Button>
+        </Fade>
 
         {/* Test Data Controls */}
         {testDataLoaded && (
-          <div className="bg-yellow-900/30 border border-yellow-700/50 text-yellow-200 px-4 py-3 rounded-xl backdrop-blur-sm">
-            <p className="font-semibold">Test Data Loaded</p>
-            <p className="text-sm">
-              You are viewing test data from the 2025 fixture. Real matches are not affected.
-            </p>
-            <button
-              onClick={handleClearTestData}
-              className="mt-2 bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 text-sm transition-colors"
+          <Fade in={true}>
+            <Alert 
+              severity="warning" 
+              sx={{ mb: 3, borderRadius: 2 }}
+              action={
+                <Button color="inherit" size="small" onClick={handleClearTestData}>
+                  Clear
+                </Button>
+              }
             >
-              Clear Test Data
-            </button>
-          </div>
+              <Typography variant="body2" fontWeight={600}>Test Data Loaded</Typography>
+              <Typography variant="caption">
+                You are viewing test data from the 2025 fixture. Real matches are not affected.
+              </Typography>
+            </Alert>
+          </Fade>
         )}
 
         {!testDataLoaded && stats?.totalGames === 0 && (
-          <div className="bg-afl-blue/30 border border-afl-blue-light/50 text-blue-200 px-4 py-3 rounded-xl backdrop-blur-sm">
-            <p className="font-semibold">No Matches Yet</p>
-            <p className="text-sm mb-2">
-              Load test data to see how the dashboard looks with sample matches, or add a real match.
-            </p>
-            <button
-              onClick={handleLoadTestData}
-              className="bg-afl-blue-light text-white px-4 py-2 rounded-lg hover:bg-afl-blue-lighter text-sm transition-colors"
+          <Fade in={true}>
+            <Alert 
+              severity="info" 
+              sx={{ mb: 3, borderRadius: 2 }}
+              action={
+                <Button color="inherit" size="small" onClick={handleLoadTestData}>
+                  Load
+                </Button>
+              }
             >
-              Load Test Data (17 matches)
-            </button>
-          </div>
+              <Typography variant="body2" fontWeight={600}>No Matches Yet</Typography>
+              <Typography variant="caption">
+                Load test data to see how the dashboard looks with sample matches, or add a real match.
+              </Typography>
+            </Alert>
+          </Fade>
         )}
 
         {/* Season Summary */}
         {stats && stats.totalGames > 0 && (
-          <div className="bg-dark-card rounded-xl shadow-2xl p-6 border border-dark-border">
-            <h2 className="text-2xl font-bold mb-4 text-white">Season Summary</h2>
-            
-            {/* Games Played */}
-            <div className="mb-4">
-              <p className="text-gray-400 text-sm">Games Played</p>
-              <p className="text-4xl font-bold text-afl-gold">{stats.totalGames}</p>
-            </div>
+          <Fade in={true} timeout={800}>
+            <Card sx={{ mb: 3 }}>
+              <CardContent sx={{ p: 4 }}>
+                <Typography variant="h4" gutterBottom fontWeight={700}>
+                  Season Summary
+                </Typography>
+                
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="body2" color="text.secondary">
+                    Games Played
+                  </Typography>
+                  <Typography variant="h2" color="primary" fontWeight={700}>
+                    {stats.totalGames}
+                  </Typography>
+                </Box>
 
-            {/* Key Stats Grid */}
-            <div className="grid grid-cols-3 gap-4 mb-4">
-              <div className="text-center bg-afl-navy/50 rounded-lg p-3">
-                <p className="text-2xl font-bold text-grass-green">{stats.stats.goals}</p>
-                <p className="text-sm text-gray-400">Goals</p>
-              </div>
-              <div className="text-center bg-afl-navy/50 rounded-lg p-3">
-                <p className="text-2xl font-bold text-white">{stats.stats.kicks}</p>
-                <p className="text-sm text-gray-400">Kicks</p>
-              </div>
-              <div className="text-center bg-afl-navy/50 rounded-lg p-3">
-                <p className="text-2xl font-bold text-white">{stats.stats.marks}</p>
-                <p className="text-sm text-gray-400">Marks</p>
-              </div>
-            </div>
+                <Grid container spacing={2} sx={{ mb: 3 }}>
+                  <Grid item xs={4}>
+                    <Card sx={{ bgcolor: 'success.light', textAlign: 'center', p: 2 }}>
+                      <Typography variant="h3" fontWeight={700} color="success.dark">
+                        {stats.stats.goals}
+                      </Typography>
+                      <Typography variant="body2" color="success.dark">
+                        Goals
+                      </Typography>
+                    </Card>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Card sx={{ bgcolor: 'info.light', textAlign: 'center', p: 2 }}>
+                      <Typography variant="h3" fontWeight={700} color="info.dark">
+                        {stats.stats.kicks}
+                      </Typography>
+                      <Typography variant="body2" color="info.dark">
+                        Kicks
+                      </Typography>
+                    </Card>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Card sx={{ bgcolor: 'secondary.light', textAlign: 'center', p: 2 }}>
+                      <Typography variant="h3" fontWeight={700} color="secondary.dark">
+                        {stats.stats.marks}
+                      </Typography>
+                      <Typography variant="body2" color="secondary.dark">
+                        Marks
+                      </Typography>
+                    </Card>
+                  </Grid>
+                </Grid>
 
-            {/* Averages */}
-            <div className="border-t border-dark-border pt-4">
-              <p className="text-sm font-semibold text-gray-300 mb-2">Per Game Averages</p>
-              <div className="grid grid-cols-4 gap-2 text-center text-sm">
-                <div className="bg-afl-navy/50 rounded-lg p-2">
-                  <p className="font-bold text-white">{stats.averages.kicks}</p>
-                  <p className="text-gray-400 text-xs">Kicks</p>
-                </div>
-                <div className="bg-afl-navy/50 rounded-lg p-2">
-                  <p className="font-bold text-white">{stats.averages.handballs}</p>
-                  <p className="text-gray-400 text-xs">Handballs</p>
-                </div>
-                <div className="bg-afl-navy/50 rounded-lg p-2">
-                  <p className="font-bold text-white">{stats.averages.tackles}</p>
-                  <p className="text-gray-400 text-xs">Tackles</p>
-                </div>
-                <div className="bg-afl-navy/50 rounded-lg p-2">
-                  <p className="font-bold text-white">{stats.averages.marks}</p>
-                  <p className="text-gray-400 text-xs">Marks</p>
-                </div>
-              </div>
-            </div>
+                <Divider sx={{ my: 2 }} />
 
-            <Link
-              to="/dashboard"
-              className="block mt-4 text-center text-afl-blue-lighter hover:text-afl-gold font-semibold transition-colors"
-            >
-              View Full Dashboard →
-            </Link>
-          </div>
+                <Typography variant="body2" fontWeight={600} color="text.secondary" gutterBottom>
+                  Per Game Averages
+                </Typography>
+                <Grid container spacing={1}>
+                  {[
+                    { label: 'Kicks', value: stats.averages.kicks },
+                    { label: 'Handballs', value: stats.averages.handballs },
+                    { label: 'Tackles', value: stats.averages.tackles },
+                    { label: 'Marks', value: stats.averages.marks }
+                  ].map((stat) => (
+                    <Grid item xs={3} key={stat.label}>
+                      <Box sx={{ textAlign: 'center', bgcolor: 'background.default', borderRadius: 2, p: 1.5 }}>
+                        <Typography variant="h6" fontWeight={700}>
+                          {stat.value}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {stat.label}
+                        </Typography>
+                      </Box>
+                    </Grid>
+                  ))}
+                </Grid>
+
+                <Button
+                  component={RouterLink}
+                  to="/dashboard"
+                  fullWidth
+                  sx={{ mt: 3 }}
+                  endIcon="📊"
+                >
+                  View Full Dashboard
+                </Button>
+              </CardContent>
+            </Card>
+          </Fade>
         )}
 
         {/* Recent Matches */}
         {recentMatches.length > 0 && (
-          <div className="bg-dark-card rounded-xl shadow-2xl p-6 border border-dark-border">
-            <h2 className="text-xl font-bold mb-4 text-white">Recent Matches</h2>
-            <div className="space-y-3">
-              {recentMatches.map((match) => (
-                <Link
-                  key={match.id}
-                  to={`/match/${match.id}/view`}
-                  className="block border border-dark-border rounded-lg p-4 hover:bg-afl-navy/50 hover:border-afl-blue-light transition-all duration-200 card-hover"
-                >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="font-semibold text-white">vs {match.opponent}</p>
-                      <p className="text-sm text-gray-400">
-                        {new Date(match.date).toLocaleDateString()} • {match.venue}
-                      </p>
-                      {match.isTestData && (
-                        <span className="text-xs bg-yellow-900/50 text-yellow-300 border border-yellow-700/50 px-2 py-1 rounded mt-1 inline-block">
-                          Test Data
-                        </span>
-                      )}
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-semibold text-grass-green">
-                        {match.stats.goals}G {match.stats.behinds}B
-                      </p>
-                      <p className="text-xs text-gray-400">
-                        {match.stats.kicks}K {match.stats.marks}M
-                      </p>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
+          <Fade in={true} timeout={1000}>
+            <Card sx={{ mb: 3 }}>
+              <CardContent sx={{ p: 4 }}>
+                <Typography variant="h5" gutterBottom fontWeight={700}>
+                  Recent Matches
+                </Typography>
+                
+                <Box sx={{ mt: 2 }}>
+                  {recentMatches.map((match) => (
+                    <Card
+                      key={match.id}
+                      component={RouterLink}
+                      to={`/match/${match.id}/view`}
+                      sx={{
+                        mb: 2,
+                        textDecoration: 'none',
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          transform: 'translateX(8px)',
+                          boxShadow: 4,
+                        }
+                      }}
+                    >
+                      <CardContent>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
+                          <Box>
+                            <Typography variant="h6" fontWeight={600}>
+                              vs {match.opponent}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              {new Date(match.date).toLocaleDateString()} • {match.venue}
+                            </Typography>
+                            {match.isTestData && (
+                              <Chip 
+                                label="Test Data" 
+                                size="small" 
+                                color="warning" 
+                                sx={{ mt: 1 }} 
+                              />
+                            )}
+                          </Box>
+                          <Box sx={{ textAlign: 'right' }}>
+                            <Typography variant="body1" fontWeight={700} color="success.main">
+                              {match.stats.goals}G {match.stats.behinds}B
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary">
+                              {match.stats.kicks}K {match.stats.marks}M
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </Box>
 
-            <Link
-              to="/history"
-              className="block mt-4 text-center text-afl-blue-lighter hover:text-afl-gold font-semibold transition-colors"
-            >
-              View All Matches →
-            </Link>
-          </div>
+                <Button
+                  component={RouterLink}
+                  to="/history"
+                  fullWidth
+                  sx={{ mt: 2 }}
+                  endIcon="→"
+                >
+                  View All Matches
+                </Button>
+              </CardContent>
+            </Card>
+          </Fade>
         )}
 
-        {/* Navigation */}
-        <div className="grid grid-cols-2 gap-4">
-          <Link
-            to="/dashboard"
-            className="bg-dark-card rounded-xl shadow-xl p-6 text-center hover:bg-afl-navy/50 transition-all duration-200 border border-dark-border card-hover"
-          >
-            <p className="text-2xl mb-2">📊</p>
-            <p className="font-semibold text-white">Dashboard</p>
-          </Link>
-          <Link
-            to="/history"
-            className="bg-dark-card rounded-xl shadow-xl p-6 text-center hover:bg-afl-navy/50 transition-all duration-200 border border-dark-border card-hover"
-          >
-            <p className="text-2xl mb-2">📋</p>
-            <p className="font-semibold text-white">Match History</p>
-          </Link>
-        </div>
-      </div>
-    </div>
+        {/* Navigation Cards */}
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6}>
+            <Card
+              component={RouterLink}
+              to="/dashboard"
+              sx={{
+                textDecoration: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  transform: 'translateY(-4px)',
+                  boxShadow: 6,
+                }
+              }}
+            >
+              <CardContent sx={{ textAlign: 'center', py: 4 }}>
+                <Typography variant="h1" sx={{ mb: 2 }}>📊</Typography>
+                <Typography variant="h6" fontWeight={600}>
+                  Dashboard
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  View your analytics
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Card
+              component={RouterLink}
+              to="/history"
+              sx={{
+                textDecoration: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  transform: 'translateY(-4px)',
+                  boxShadow: 6,
+                }
+              }}
+            >
+              <CardContent sx={{ textAlign: 'center', py: 4 }}>
+                <Typography variant="h1" sx={{ mb: 2 }}>📋</Typography>
+                <Typography variant="h6" fontWeight={600}>
+                  Match History
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Browse all matches
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+      </Container>
+    </Box>
   );
 }

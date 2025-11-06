@@ -1,15 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams, Link } from 'react-router-dom';
-import { useTheme } from '../context/ThemeContext';
-import { getMatch } from '../services/matchService';
-import ThemeSelector from '../components/ThemeSelector';
+import { useNavigate, useParams, Link as RouterLink } from 'react-router-dom';
+import { getMatch, deleteMatch } from '../services/matchService';
+import {
+  Box,
+  Container,
+  Typography,
+  Button,
+  Card,
+  CardContent,
+  Grid,
+  Chip,
+  CircularProgress,
+  Fade,
+  AppBar,
+  Toolbar,
+  Divider,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
+} from '@mui/material';
 
 export default function MatchDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { theme } = useTheme();
   const [match, setMatch] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   useEffect(() => {
     async function loadMatch() {
@@ -26,154 +43,248 @@ export default function MatchDetailPage() {
     loadMatch();
   }, [id]);
 
+  const handleDelete = async () => {
+    try {
+      await deleteMatch(parseInt(id));
+      navigate('/history');
+    } catch (error) {
+      alert('Failed to delete match: ' + error.message);
+    }
+  };
+
   if (loading) {
     return (
-      <div className={`min-h-screen ${theme.colors.bgPrimary} flex items-center justify-center`}>
-        <div className={`text-xl ${theme.colors.textPrimary}`}>Loading...</div>
-      </div>
+      <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <CircularProgress size={60} />
+      </Box>
     );
   }
 
   if (!match) {
     return (
-      <div className={`min-h-screen ${theme.colors.bgPrimary} flex items-center justify-center`}>
-        <div className={`text-xl ${theme.colors.textPrimary}`}>Match not found</div>
-      </div>
+      <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Typography variant="h6" color="text.secondary">
+          Match not found
+        </Typography>
+      </Box>
     );
   }
 
   const allStats = [
-    { label: 'Kicks', value: match.stats.kicks },
-    { label: 'Handballs', value: match.stats.handballs },
-    { label: 'Marks', value: match.stats.marks },
-    { label: 'Goals', value: match.stats.goals },
-    { label: 'Behinds', value: match.stats.behinds },
-    { label: 'Tackles', value: match.stats.tackles },
-    { label: 'Spoils', value: match.stats.spoils },
-    { label: 'Smothers', value: match.stats.smothers },
-    { label: 'Interceptions', value: match.stats.interceptions },
-    { label: 'Frees For', value: match.stats.freesFor },
-    { label: 'Frees Against', value: match.stats.freesAgainst },
+    { label: 'Kicks', value: match.stats.kicks, icon: '🦵' },
+    { label: 'Handballs', value: match.stats.handballs, icon: '✋' },
+    { label: 'Marks', value: match.stats.marks, icon: '🙌' },
+    { label: 'Goals', value: match.stats.goals, icon: '⚽' },
+    { label: 'Behinds', value: match.stats.behinds, icon: '🎯' },
+    { label: 'Tackles', value: match.stats.tackles, icon: '💪' },
+    { label: 'Spoils', value: match.stats.spoils, icon: '🛡️' },
+    { label: 'Smothers', value: match.stats.smothers, icon: '🚫' },
+    { label: 'Interceptions', value: match.stats.interceptions, icon: '✋' },
+    { label: 'Frees For', value: match.stats.freesFor, icon: '✅' },
+    { label: 'Frees Against', value: match.stats.freesAgainst, icon: '⚠️' },
   ];
 
   return (
-    <div className={`min-h-screen ${theme.colors.bgPrimary}`}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', pb: 4 }}>
       {/* Header */}
-      <div className={`${theme.colors.bgSecondary} ${theme.colors.textPrimary} p-4 shadow-2xl`}>
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <button
+      <AppBar position="static" elevation={1}>
+        <Toolbar>
+          <Button
             onClick={() => navigate('/history')}
-            className={`${theme.colors.textPrimary} hover:opacity-80 transition-opacity`}
+            sx={{ mr: 2, color: 'white' }}
           >
             ← Back
-          </button>
-          <h1 className="text-xl font-bold">Match Details</h1>
-          <div className="flex items-center gap-2">
-            {!match.isTestData && (
-              <Link
-                to={`/match/${match.id}`}
-                className={`${theme.colors.textPrimary} hover:opacity-80 transition-opacity`}
-              >
-                Edit
-              </Link>
-            )}
-            <ThemeSelector />
-          </div>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="max-w-4xl mx-auto p-4 space-y-6">
-        {/* Match Info Card */}
-        <div className={`${theme.colors.bgCard} border ${theme.colors.border} ${theme.styles.card} p-6`}>
-          <div className="flex items-start justify-between mb-4">
-            <div>
-              <h2 className={`text-2xl font-bold ${theme.colors.textPrimary} mb-2`}>
-                vs {match.opponent}
-              </h2>
-              <p className={theme.colors.textSecondary}>
-                {new Date(match.date).toLocaleDateString('en-US', {
-                  weekday: 'long',
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                })}
-              </p>
-            </div>
-            <div className={`font-bold text-lg px-4 py-2 ${theme.styles.badge} ${
-              match.result === 'Win' ? theme.colors.statSuccess :
-              match.result === 'Loss' ? theme.colors.statWarning :
-              match.result === 'Draw' ? theme.colors.statInfo :
-              theme.colors.textSecondary
-            }`}>
-              {match.result}
-            </div>
-          </div>
-
-          {match.isTestData && (
-            <div className={`mb-4 ${theme.colors.statWarning} px-3 py-2 ${theme.styles.badge} text-sm`}>
-              This is test data from the 2025 fixture
-            </div>
+          </Button>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            Match Details
+          </Typography>
+          {!match.isTestData && (
+            <Button
+              component={RouterLink}
+              to={`/match/${match.id}`}
+              color="inherit"
+              size="small"
+            >
+              ✏️ Edit
+            </Button>
           )}
+        </Toolbar>
+      </AppBar>
 
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            {match.venue && (
-              <div>
-                <p className={theme.colors.textSecondary}>Venue</p>
-                <p className={`font-semibold ${theme.colors.textPrimary}`}>{match.venue}</p>
-              </div>
-            )}
-            {match.position && (
-              <div>
-                <p className={theme.colors.textSecondary}>Position</p>
-                <p className={`font-semibold ${theme.colors.textPrimary}`}>{match.position}</p>
-              </div>
-            )}
-            <div>
-              <p className={theme.colors.textSecondary}>Quarters Played</p>
-              <p className={`font-semibold ${theme.colors.textPrimary}`}>{match.quartersPlayed} / 4</p>
-            </div>
-            {match.weather && (
-              <div>
-                <p className={theme.colors.textSecondary}>Weather</p>
-                <p className={`font-semibold ${theme.colors.textPrimary}`}>{match.weather}</p>
-              </div>
-            )}
-          </div>
-        </div>
+      <Container maxWidth="md" sx={{ mt: 4 }}>
+        {/* Match Info Card */}
+        <Fade in={true} timeout={600}>
+          <Card sx={{ mb: 3 }}>
+            <CardContent sx={{ p: 4 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', mb: 3 }}>
+                <Box>
+                  <Typography variant="h3" fontWeight={700} gutterBottom>
+                    vs {match.opponent}
+                  </Typography>
+                  <Typography variant="body1" color="text.secondary" gutterBottom>
+                    {new Date(match.date).toLocaleDateString('en-US', {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </Typography>
+                  {match.venue && (
+                    <Typography variant="body2" color="text.secondary">
+                      📍 {match.venue}
+                    </Typography>
+                  )}
+                  {match.isTestData && (
+                    <Chip label="Test Data" color="warning" size="small" sx={{ mt: 2 }} />
+                  )}
+                </Box>
+                <Chip
+                  label={match.result}
+                  color={
+                    match.result === 'Win' ? 'success' :
+                    match.result === 'Loss' ? 'error' :
+                    match.result === 'Draw' ? 'info' : 'default'
+                  }
+                  sx={{ fontSize: '1rem', fontWeight: 700, py: 2.5, px: 2 }}
+                />
+              </Box>
+
+              <Divider sx={{ my: 3 }} />
+
+              <Grid container spacing={2}>
+                {match.position && (
+                  <Grid item xs={6}>
+                    <Typography variant="body2" color="text.secondary">
+                      Position
+                    </Typography>
+                    <Typography variant="body1" fontWeight={600}>
+                      {match.position}
+                    </Typography>
+                  </Grid>
+                )}
+                <Grid item xs={6}>
+                  <Typography variant="body2" color="text.secondary">
+                    Quarters Played
+                  </Typography>
+                  <Typography variant="body1" fontWeight={600}>
+                    {match.quartersPlayed} / 4
+                  </Typography>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+        </Fade>
 
         {/* Statistics */}
-        <div className={`${theme.colors.bgCard} border ${theme.colors.border} ${theme.styles.card} p-6`}>
-          <h3 className={`text-xl font-bold ${theme.colors.textPrimary} mb-4`}>Statistics</h3>
-          
-          <div className="space-y-3">
-            {allStats.map(({ label, value }) => (
-              <div key={label} className={`flex justify-between items-center ${theme.colors.bgCard} ${theme.styles.card} p-3`}>
-                <span className={theme.colors.textSecondary}>{label}</span>
-                <span className={`text-2xl font-bold ${theme.colors.textPrimary}`}>{value}</span>
-              </div>
-            ))}
-          </div>
+        <Fade in={true} timeout={800}>
+          <Card sx={{ mb: 3 }}>
+            <CardContent sx={{ p: 4 }}>
+              <Typography variant="h5" fontWeight={700} gutterBottom sx={{ mb: 3 }}>
+                Statistics
+              </Typography>
 
-          {/* Totals */}
-          <div className={`mt-6 pt-4 border-t ${theme.colors.border}`}>
-            <div className="flex justify-between items-center">
-              <span className={`font-semibold ${theme.colors.textSecondary}`}>Total Disposals</span>
-              <span className={`text-3xl font-bold ${theme.colors.textAccent}`}>
-                {match.stats.kicks + match.stats.handballs}
-              </span>
-            </div>
-          </div>
-        </div>
+              <Grid container spacing={2}>
+                {allStats.map((stat) => (
+                  <Grid item xs={6} sm={4} key={stat.label}>
+                    <Card variant="outlined" sx={{ textAlign: 'center', p: 2, bgcolor: 'background.default' }}>
+                      <Typography variant="h2" sx={{ mb: 1 }}>{stat.icon}</Typography>
+                      <Typography variant="h4" fontWeight={700} color="primary">
+                        {stat.value}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {stat.label}
+                      </Typography>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+
+              {/* Key Metrics Summary */}
+              <Box sx={{ mt: 4, p: 3, bgcolor: 'primary.light', borderRadius: 2 }}>
+                <Typography variant="h6" fontWeight={600} color="primary.dark" gutterBottom>
+                  Key Metrics
+                </Typography>
+                <Grid container spacing={2}>
+                  <Grid item xs={6}>
+                    <Typography variant="body2" color="primary.dark">
+                      Total Disposals
+                    </Typography>
+                    <Typography variant="h5" fontWeight={700} color="primary.dark">
+                      {match.stats.kicks + match.stats.handballs}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant="body2" color="primary.dark">
+                      Total Score
+                    </Typography>
+                    <Typography variant="h5" fontWeight={700} color="primary.dark">
+                      {match.stats.goals}G {match.stats.behinds}B ({match.stats.goals * 6 + match.stats.behinds} pts)
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </Box>
+            </CardContent>
+          </Card>
+        </Fade>
 
         {/* Notes */}
         {match.notes && (
-          <div className={`${theme.colors.bgCard} border ${theme.colors.border} ${theme.styles.card} p-6`}>
-            <h3 className={`text-lg font-bold ${theme.colors.textPrimary} mb-2`}>Notes</h3>
-            <p className={`${theme.colors.textSecondary} whitespace-pre-wrap`}>{match.notes}</p>
-          </div>
+          <Fade in={true} timeout={1000}>
+            <Card sx={{ mb: 3 }}>
+              <CardContent sx={{ p: 4 }}>
+                <Typography variant="h5" fontWeight={700} gutterBottom>
+                  Notes
+                </Typography>
+                <Typography variant="body1" color="text.secondary" sx={{ whiteSpace: 'pre-wrap' }}>
+                  {match.notes}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Fade>
         )}
-      </div>
-    </div>
+
+        {/* Actions */}
+        {!match.isTestData && (
+          <Fade in={true} timeout={1200}>
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <Button
+                component={RouterLink}
+                to={`/match/${match.id}`}
+                variant="contained"
+                size="large"
+                fullWidth
+              >
+                ✏️ Edit Match
+              </Button>
+              <Button
+                onClick={() => setDeleteDialogOpen(true)}
+                variant="outlined"
+                color="error"
+                size="large"
+                fullWidth
+              >
+                🗑️ Delete Match
+              </Button>
+            </Box>
+          </Fade>
+        )}
+      </Container>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+        <DialogTitle>Delete Match?</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to delete this match? This action cannot be undone.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
+          <Button onClick={handleDelete} color="error" variant="contained">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
   );
 }

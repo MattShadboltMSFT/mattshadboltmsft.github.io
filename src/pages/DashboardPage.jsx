@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Line } from 'react-chartjs-2';
+import { Line, Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
   PointElement,
   LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend,
@@ -14,12 +15,28 @@ import {
 import { useApp } from '../context/AppContext';
 import { getSeasonStats } from '../services/matchService';
 import { exportToCSV, exportToPDF } from '../services/exportService';
+import {
+  Box,
+  Container,
+  Typography,
+  Button,
+  Card,
+  CardContent,
+  Grid,
+  CircularProgress,
+  Fade,
+  AppBar,
+  Toolbar,
+  Chip,
+  Divider
+} from '@mui/material';
 
 ChartJS.register(
   CategoryScale,
   LinearScale,
   PointElement,
   LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend
@@ -50,86 +67,119 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-dark-bg flex items-center justify-center">
-        <div className="text-xl text-white">Loading...</div>
-      </div>
+      <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <CircularProgress size={60} />
+      </Box>
     );
   }
 
   if (!stats || stats.totalGames === 0) {
     return (
-      <div className="min-h-screen bg-dark-bg">
-        <div className="bg-gradient-to-r from-afl-navy via-afl-blue to-afl-blue-light text-white p-4 shadow-2xl">
-          <div className="max-w-4xl mx-auto flex items-center justify-between">
-            <button onClick={() => navigate('/')} className="text-white hover:text-afl-gold transition-colors">
+      <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+        <AppBar position="static" elevation={1}>
+          <Toolbar>
+            <Button onClick={() => navigate('/')} sx={{ mr: 2, color: 'white' }}>
               ← Home
-            </button>
-            <h1 className="text-xl font-bold">Dashboard</h1>
-            <div className="w-16"></div>
-          </div>
-        </div>
-        <div className="max-w-4xl mx-auto p-4">
-          <div className="bg-dark-card border border-dark-border rounded-xl shadow-2xl p-8 text-center">
-            <p className="text-gray-400">No matches to display</p>
-          </div>
-        </div>
-      </div>
+            </Button>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              Dashboard
+            </Typography>
+            <Typography variant="body2">📊</Typography>
+          </Toolbar>
+        </AppBar>
+        <Container maxWidth="lg" sx={{ mt: 4 }}>
+          <Card>
+            <CardContent sx={{ textAlign: 'center', py: 6 }}>
+              <Typography variant="h6" color="text.secondary">
+                No matches to display
+              </Typography>
+            </CardContent>
+          </Card>
+        </Container>
+      </Box>
     );
   }
 
   // Prepare chart data
   const matches = stats.matches.slice().reverse(); // Chronological order
-  const chartData = {
-    labels: matches.map((_, index) => `Match ${index + 1}`),
+  
+  const performanceTrendData = {
+    labels: matches.map((m, index) => `Match ${index + 1}`),
     datasets: [
       {
         label: 'Goals',
         data: matches.map(m => m.stats.goals),
-        borderColor: '#2C7A3D',
-        backgroundColor: 'rgba(44, 122, 61, 0.3)',
-        tension: 0.3,
+        borderColor: '#10B981',
+        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+        tension: 0.4,
       },
       {
         label: 'Kicks',
         data: matches.map(m => m.stats.kicks),
-        borderColor: '#1E6FBA',
-        backgroundColor: 'rgba(30, 111, 186, 0.3)',
-        tension: 0.3,
+        borderColor: '#6366F1',
+        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+        tension: 0.4,
+      },
+      {
+        label: 'Marks',
+        data: matches.map(m => m.stats.marks),
+        borderColor: '#8B5CF6',
+        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+        tension: 0.4,
+      },
+    ],
+  };
+
+  const averageStatsData = {
+    labels: ['Kicks', 'Handballs', 'Marks', 'Tackles', 'Goals'],
+    datasets: [
+      {
+        label: 'Season Average',
+        data: [
+          parseFloat(stats.averages.kicks),
+          parseFloat(stats.averages.handballs),
+          parseFloat(stats.averages.marks),
+          parseFloat(stats.averages.tackles),
+          parseFloat(stats.averages.goals),
+        ],
+        backgroundColor: [
+          'rgba(99, 102, 241, 0.8)',
+          'rgba(139, 92, 246, 0.8)',
+          'rgba(16, 185, 129, 0.8)',
+          'rgba(59, 130, 246, 0.8)',
+          'rgba(245, 158, 11, 0.8)',
+        ],
+        borderWidth: 0,
+        borderRadius: 8,
       },
     ],
   };
 
   const chartOptions = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: 'top',
         labels: {
-          color: '#E5E7EB',
+          padding: 15,
+          font: {
+            size: 12,
+            family: 'Inter, sans-serif',
+          },
         },
-      },
-      title: {
-        display: true,
-        text: 'Performance Trends',
-        color: '#E5E7EB',
       },
     },
     scales: {
       y: {
         beginAtZero: true,
-        ticks: {
-          color: '#9CA3AF',
-        },
         grid: {
-          color: '#1E3A5F',
+          color: 'rgba(0, 0, 0, 0.05)',
         },
       },
       x: {
-        ticks: {
-          color: '#9CA3AF',
-        },
         grid: {
-          color: '#1E3A5F',
+          display: false,
         },
       },
     },
@@ -137,7 +187,7 @@ export default function DashboardPage() {
 
   const handleExportCSV = () => {
     try {
-      exportToCSV(stats.matches, player.name, player.season);
+      exportToCSV(stats.matches, player);
     } catch (error) {
       alert('Failed to export CSV: ' + error.message);
     }
@@ -145,130 +195,193 @@ export default function DashboardPage() {
 
   const handleExportPDF = () => {
     try {
-      exportToPDF(stats.matches, player.name, player.teamName, player.season, stats);
+      exportToPDF(stats.matches, player, stats);
     } catch (error) {
       alert('Failed to export PDF: ' + error.message);
     }
   };
 
   return (
-    <div className="min-h-screen bg-dark-bg">
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', pb: 4 }}>
       {/* Header */}
-      <div className="bg-gradient-to-r from-afl-navy via-afl-blue to-afl-blue-light text-white p-4 shadow-2xl">
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <button
-            onClick={() => navigate('/')}
-            className="text-white hover:text-afl-gold transition-colors"
-          >
+      <AppBar position="static" elevation={1}>
+        <Toolbar>
+          <Button onClick={() => navigate('/')} sx={{ mr: 2, color: 'white' }}>
             ← Home
-          </button>
-          <h1 className="text-xl font-bold">Dashboard</h1>
-          <div className="w-16"></div>
-        </div>
-      </div>
+          </Button>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            Dashboard
+          </Typography>
+          <Button onClick={handleExportCSV} color="inherit" size="small" sx={{ mr: 1 }}>
+            📥 CSV
+          </Button>
+          <Button onClick={handleExportPDF} color="inherit" size="small">
+            📄 PDF
+          </Button>
+        </Toolbar>
+      </AppBar>
 
-      {/* Content */}
-      <div className="max-w-4xl mx-auto p-4 space-y-6">
+      <Container maxWidth="lg" sx={{ mt: 4 }}>
         {/* Season Overview */}
-        <div className="bg-dark-card border border-dark-border rounded-xl shadow-2xl p-6">
-          <h2 className="text-2xl font-bold mb-4 text-white">Season {player.season}</h2>
-          <div className="text-center mb-4">
-            <p className="text-gray-400 text-sm">Total Games Played</p>
-            <p className="text-5xl font-bold text-afl-gold">{stats.totalGames}</p>
-          </div>
+        <Fade in={true} timeout={600}>
+          <Card sx={{ mb: 3 }}>
+            <CardContent sx={{ p: 4 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+                <Box>
+                  <Typography variant="h4" fontWeight={700} gutterBottom>
+                    Season {player.season}
+                  </Typography>
+                  <Typography variant="body1" color="text.secondary">
+                    {player.teamName}
+                  </Typography>
+                </Box>
+                <Chip
+                  label={`${stats.totalGames} Matches`}
+                  color="primary"
+                  sx={{ fontSize: '1rem', py: 2.5, px: 1 }}
+                />
+              </Box>
 
-          {/* Export Buttons */}
-          <div className="grid grid-cols-2 gap-3 mt-4">
-            <button
-              onClick={handleExportCSV}
-              className="bg-grass-green text-white py-3 px-4 rounded-lg font-semibold hover:bg-green-700 transition-all duration-200 text-sm shadow-lg"
-            >
-              📊 Export CSV
-            </button>
-            <button
-              onClick={handleExportPDF}
-              className="bg-gradient-to-r from-afl-accent to-red-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-red-600 hover:to-afl-accent transition-all duration-200 text-sm shadow-lg"
-            >
-              📄 Export PDF
-            </button>
-          </div>
-        </div>
+              <Grid container spacing={3}>
+                {[
+                  { label: 'Total Goals', value: stats.stats.goals, icon: '⚽', color: 'success.main' },
+                  { label: 'Total Kicks', value: stats.stats.kicks, icon: '🦵', color: 'primary.main' },
+                  { label: 'Total Marks', value: stats.stats.marks, icon: '🙌', color: 'secondary.main' },
+                  { label: 'Total Tackles', value: stats.stats.tackles, icon: '💪', color: 'info.main' },
+                ].map((stat) => (
+                  <Grid item xs={6} sm={3} key={stat.label}>
+                    <Card variant="outlined" sx={{ textAlign: 'center', p: 2, bgcolor: 'background.default' }}>
+                      <Typography variant="h3" sx={{ mb: 1 }}>{stat.icon}</Typography>
+                      <Typography variant="h4" fontWeight={700} sx={{ color: stat.color }}>
+                        {stat.value}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {stat.label}
+                      </Typography>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            </CardContent>
+          </Card>
+        </Fade>
 
-        {/* Key Stats */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="bg-dark-card border border-dark-border rounded-xl shadow-2xl p-6 text-center">
-            <p className="text-4xl font-bold text-grass-green mb-2">{stats.stats.goals}</p>
-            <p className="text-gray-300">Total Goals</p>
-            <p className="text-sm text-gray-500 mt-1">Avg: {stats.averages.goals}/game</p>
-          </div>
-          <div className="bg-dark-card border border-dark-border rounded-xl shadow-2xl p-6 text-center">
-            <p className="text-4xl font-bold text-white mb-2">{stats.stats.kicks}</p>
-            <p className="text-gray-300">Total Kicks</p>
-            <p className="text-sm text-gray-500 mt-1">Avg: {stats.averages.kicks}/game</p>
-          </div>
-        </div>
+        {/* Charts */}
+        <Grid container spacing={3}>
+          {/* Performance Trend */}
+          <Grid item xs={12}>
+            <Fade in={true} timeout={800}>
+              <Card>
+                <CardContent sx={{ p: 4 }}>
+                  <Typography variant="h5" fontWeight={700} gutterBottom>
+                    📈 Performance Trends
+                  </Typography>
+                  <Box sx={{ height: 400, mt: 3 }}>
+                    <Line data={performanceTrendData} options={chartOptions} />
+                  </Box>
+                </CardContent>
+              </Card>
+            </Fade>
+          </Grid>
 
-        {/* All Stats Grid */}
-        <div className="bg-dark-card border border-dark-border rounded-xl shadow-2xl p-6">
-          <h3 className="text-xl font-bold mb-4 text-white">Season Totals</h3>
-          <div className="grid grid-cols-3 gap-4">
-            <div className="text-center bg-afl-navy/50 rounded-lg p-3">
-              <p className="text-2xl font-bold text-white">{stats.stats.handballs}</p>
-              <p className="text-sm text-gray-400">Handballs</p>
-              <p className="text-xs text-gray-500">Avg: {stats.averages.handballs}</p>
-            </div>
-            <div className="text-center bg-afl-navy/50 rounded-lg p-3">
-              <p className="text-2xl font-bold text-white">{stats.stats.marks}</p>
-              <p className="text-sm text-gray-400">Marks</p>
-              <p className="text-xs text-gray-500">Avg: {stats.averages.marks}</p>
-            </div>
-            <div className="text-center bg-afl-navy/50 rounded-lg p-3">
-              <p className="text-2xl font-bold text-white">{stats.stats.tackles}</p>
-              <p className="text-sm text-gray-400">Tackles</p>
-              <p className="text-xs text-gray-500">Avg: {stats.averages.tackles}</p>
-            </div>
-            <div className="text-center bg-afl-navy/50 rounded-lg p-3">
-              <p className="text-2xl font-bold text-white">{stats.stats.spoils}</p>
-              <p className="text-sm text-gray-400">Spoils</p>
-              <p className="text-xs text-gray-500">Avg: {stats.averages.spoils}</p>
-            </div>
-            <div className="text-center bg-afl-navy/50 rounded-lg p-3">
-              <p className="text-2xl font-bold text-white">{stats.stats.interceptions}</p>
-              <p className="text-sm text-gray-400">Interceptions</p>
-              <p className="text-xs text-gray-500">Avg: {stats.averages.interceptions}</p>
-            </div>
-            <div className="text-center bg-afl-navy/50 rounded-lg p-3">
-              <p className="text-2xl font-bold text-white">{stats.stats.behinds}</p>
-              <p className="text-sm text-gray-400">Behinds</p>
-              <p className="text-xs text-gray-500">Avg: {stats.averages.behinds}</p>
-            </div>
-          </div>
-        </div>
+          {/* Average Stats */}
+          <Grid item xs={12} md={6}>
+            <Fade in={true} timeout={1000}>
+              <Card>
+                <CardContent sx={{ p: 4 }}>
+                  <Typography variant="h5" fontWeight={700} gutterBottom>
+                    📊 Season Averages
+                  </Typography>
+                  <Box sx={{ height: 350, mt: 3 }}>
+                    <Bar data={averageStatsData} options={chartOptions} />
+                  </Box>
+                </CardContent>
+              </Card>
+            </Fade>
+          </Grid>
 
-        {/* Personal Bests */}
-        <div className="bg-dark-card border border-dark-border rounded-xl shadow-2xl p-6">
-          <h3 className="text-xl font-bold mb-4 text-white">Personal Bests</h3>
-          <div className="grid grid-cols-3 gap-4">
-            <div className="text-center bg-afl-gold/20 border border-afl-gold/40 p-3 rounded-lg">
-              <p className="text-2xl font-bold text-afl-gold">{stats.personalBests.goals}</p>
-              <p className="text-sm text-gray-300">Goals</p>
-            </div>
-            <div className="text-center bg-afl-gold/20 border border-afl-gold/40 p-3 rounded-lg">
-              <p className="text-2xl font-bold text-afl-gold">{stats.personalBests.kicks}</p>
-              <p className="text-sm text-gray-300">Kicks</p>
-            </div>
-            <div className="text-center bg-afl-gold/20 border border-afl-gold/40 p-3 rounded-lg">
-              <p className="text-2xl font-bold text-afl-gold">{stats.personalBests.marks}</p>
-              <p className="text-sm text-gray-300">Marks</p>
-            </div>
-          </div>
-        </div>
+          {/* Personal Bests */}
+          <Grid item xs={12} md={6}>
+            <Fade in={true} timeout={1200}>
+              <Card>
+                <CardContent sx={{ p: 4 }}>
+                  <Typography variant="h5" fontWeight={700} gutterBottom sx={{ mb: 3 }}>
+                    🏆 Personal Bests
+                  </Typography>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    {[
+                      { label: 'Most Goals', value: stats.personalBests.goals, icon: '⚽' },
+                      { label: 'Most Kicks', value: stats.personalBests.kicks, icon: '🦵' },
+                      { label: 'Most Marks', value: stats.personalBests.marks, icon: '🙌' },
+                      { label: 'Most Tackles', value: stats.personalBests.tackles, icon: '💪' },
+                      { label: 'Most Handballs', value: stats.personalBests.handballs, icon: '✋' },
+                    ].map((best) => (
+                      <Box
+                        key={best.label}
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          p: 2,
+                          bgcolor: 'background.default',
+                          borderRadius: 2,
+                        }}
+                      >
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                          <Typography variant="h5">{best.icon}</Typography>
+                          <Typography variant="body1" fontWeight={600}>
+                            {best.label}
+                          </Typography>
+                        </Box>
+                        <Typography variant="h5" fontWeight={700} color="primary">
+                          {best.value}
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Box>
+                </CardContent>
+              </Card>
+            </Fade>
+          </Grid>
+        </Grid>
 
-        {/* Trend Chart */}
-        <div className="bg-dark-card border border-dark-border rounded-xl shadow-2xl p-6">
-          <Line data={chartData} options={chartOptions} />
-        </div>
-      </div>
-    </div>
+        {/* Per Game Averages Table */}
+        <Fade in={true} timeout={1400}>
+          <Card sx={{ mt: 3 }}>
+            <CardContent sx={{ p: 4 }}>
+              <Typography variant="h5" fontWeight={700} gutterBottom sx={{ mb: 3 }}>
+                📋 Detailed Statistics
+              </Typography>
+              <Grid container spacing={2}>
+                {[
+                  { label: 'Kicks', value: stats.averages.kicks },
+                  { label: 'Handballs', value: stats.averages.handballs },
+                  { label: 'Marks', value: stats.averages.marks },
+                  { label: 'Tackles', value: stats.averages.tackles },
+                  { label: 'Goals', value: stats.averages.goals },
+                  { label: 'Behinds', value: stats.averages.behinds },
+                  { label: 'Spoils', value: stats.averages.spoils },
+                  { label: 'Smothers', value: stats.averages.smothers },
+                  { label: 'Interceptions', value: stats.averages.interceptions },
+                  { label: 'Frees For', value: stats.averages.freesFor },
+                  { label: 'Frees Against', value: stats.averages.freesAgainst },
+                ].map((stat) => (
+                  <Grid item xs={6} sm={4} md={3} key={stat.label}>
+                    <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'background.default', borderRadius: 2 }}>
+                      <Typography variant="h5" fontWeight={700} color="primary">
+                        {stat.value}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {stat.label} per game
+                      </Typography>
+                    </Box>
+                  </Grid>
+                ))}
+              </Grid>
+            </CardContent>
+          </Card>
+        </Fade>
+      </Container>
+    </Box>
   );
 }
