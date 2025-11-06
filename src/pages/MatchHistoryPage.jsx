@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { useTheme } from '../context/ThemeContext';
 import { getAllMatches, deleteMatch } from '../services/matchService';
+import ThemeSelector from '../components/ThemeSelector';
 
 export default function MatchHistoryPage() {
   const { player } = useApp();
+  const { theme } = useTheme();
   const navigate = useNavigate();
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -39,41 +42,44 @@ export default function MatchHistoryPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-dark-bg flex items-center justify-center">
-        <div className="text-xl text-white">Loading...</div>
+      <div className={`min-h-screen ${theme.colors.bgPrimary} flex items-center justify-center`}>
+        <div className={`text-xl ${theme.colors.textPrimary}`}>Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-dark-bg">
+    <div className={`min-h-screen ${theme.colors.bgPrimary}`}>
       {/* Header */}
-      <div className="bg-gradient-to-r from-afl-navy via-afl-blue to-afl-blue-light text-white p-4 shadow-2xl">
+      <div className={`${theme.colors.bgSecondary} ${theme.colors.textPrimary} p-4 shadow-2xl`}>
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <button
             onClick={() => navigate('/')}
-            className="text-white hover:text-afl-gold transition-colors"
+            className={`${theme.colors.textPrimary} hover:opacity-80 transition-opacity`}
           >
             ← Home
           </button>
           <h1 className="text-xl font-bold">Match History</h1>
-          <Link
-            to="/match/new"
-            className="text-white hover:text-afl-gold transition-colors"
-          >
-            + New
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              to="/match/new"
+              className={`${theme.colors.textPrimary} hover:opacity-80 transition-opacity`}
+            >
+              + New
+            </Link>
+            <ThemeSelector />
+          </div>
         </div>
       </div>
 
       {/* Content */}
       <div className="max-w-4xl mx-auto p-4">
         {matches.length === 0 ? (
-          <div className="bg-dark-card border border-dark-border rounded-xl shadow-2xl p-8 text-center">
-            <p className="text-gray-400 mb-4">No matches recorded yet</p>
+          <div className={`${theme.colors.bgCard} border ${theme.colors.border} ${theme.styles.card} p-8 text-center`}>
+            <p className={`${theme.colors.textSecondary} mb-4`}>No matches recorded yet</p>
             <Link
               to="/match/new"
-              className="inline-block bg-gradient-to-r from-afl-accent to-red-600 text-white py-2 px-6 rounded-lg font-semibold hover:from-red-600 hover:to-afl-accent transition-all duration-200 shadow-lg"
+              className={`inline-block ${theme.colors.btnPrimary} ${theme.colors.textPrimary} py-2 px-6 ${theme.styles.button} font-semibold`}
             >
               Add Your First Match
             </Link>
@@ -83,21 +89,21 @@ export default function MatchHistoryPage() {
             {matches.map((match) => (
               <div
                 key={match.id}
-                className="bg-dark-card border border-dark-border rounded-xl shadow-2xl p-4 card-hover"
+                className={`${theme.colors.bgCard} border ${theme.colors.border} ${theme.styles.card} p-4 ${theme.colors.bgCardHover} transition-all duration-200`}
               >
                 <div className="flex justify-between items-start mb-3">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-bold text-lg text-white">
+                      <h3 className={`font-bold text-lg ${theme.colors.textPrimary}`}>
                         vs {match.opponent}
                       </h3>
                       {match.isTestData && (
-                        <span className="text-xs bg-yellow-900/50 text-yellow-300 border border-yellow-700/50 px-2 py-1 rounded">
+                        <span className={`text-xs ${theme.colors.statWarning} px-2 py-1 ${theme.styles.badge}`}>
                           Test Data
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-gray-400">
+                    <p className={`text-sm ${theme.colors.textSecondary}`}>
                       {new Date(match.date).toLocaleDateString('en-US', {
                         weekday: 'short',
                         year: 'numeric',
@@ -106,19 +112,19 @@ export default function MatchHistoryPage() {
                       })}
                     </p>
                     {match.venue && (
-                      <p className="text-sm text-gray-400">{match.venue}</p>
+                      <p className={`text-sm ${theme.colors.textSecondary}`}>{match.venue}</p>
                     )}
                     {match.position && (
-                      <p className="text-xs text-gray-500 mt-1">{match.position}</p>
+                      <p className={`text-xs ${theme.colors.textSecondary} mt-1`}>{match.position}</p>
                     )}
                   </div>
                   
                   <div className="text-right">
-                    <div className={`font-bold text-sm px-3 py-1 rounded-lg ${
-                      match.result === 'Win' ? 'bg-green-900/50 text-green-300 border border-green-700/50' :
-                      match.result === 'Loss' ? 'bg-red-900/50 text-red-300 border border-red-700/50' :
-                      match.result === 'Draw' ? 'bg-yellow-900/50 text-yellow-300 border border-yellow-700/50' :
-                      'bg-gray-800/50 text-gray-300 border border-gray-700/50'
+                    <div className={`font-bold text-sm px-3 py-1 ${theme.styles.badge} ${
+                      match.result === 'Win' ? theme.colors.statSuccess :
+                      match.result === 'Loss' ? theme.colors.statWarning :
+                      match.result === 'Draw' ? theme.colors.statInfo :
+                      theme.colors.textSecondary
                     }`}>
                       {match.result}
                     </div>
@@ -127,37 +133,37 @@ export default function MatchHistoryPage() {
 
                 {/* Stats Summary */}
                 <div className="grid grid-cols-4 gap-2 mb-3 text-center text-sm">
-                  <div className="bg-afl-navy/50 rounded-lg p-2">
-                    <p className="font-bold text-grass-green text-lg">
+                  <div className={`${theme.colors.bgCard} ${theme.styles.card} p-2`}>
+                    <p className={`font-bold ${theme.colors.statSuccess} text-lg`}>
                       {match.stats.goals}
                     </p>
-                    <p className="text-gray-400 text-xs">Goals</p>
+                    <p className={`${theme.colors.textSecondary} text-xs`}>Goals</p>
                   </div>
-                  <div className="bg-afl-navy/50 rounded-lg p-2">
-                    <p className="font-bold text-white text-lg">
+                  <div className={`${theme.colors.bgCard} ${theme.styles.card} p-2`}>
+                    <p className={`font-bold ${theme.colors.textPrimary} text-lg`}>
                       {match.stats.kicks}
                     </p>
-                    <p className="text-gray-400 text-xs">Kicks</p>
+                    <p className={`${theme.colors.textSecondary} text-xs`}>Kicks</p>
                   </div>
-                  <div className="bg-afl-navy/50 rounded-lg p-2">
-                    <p className="font-bold text-white text-lg">
+                  <div className={`${theme.colors.bgCard} ${theme.styles.card} p-2`}>
+                    <p className={`font-bold ${theme.colors.textPrimary} text-lg`}>
                       {match.stats.marks}
                     </p>
-                    <p className="text-gray-400 text-xs">Marks</p>
+                    <p className={`${theme.colors.textSecondary} text-xs`}>Marks</p>
                   </div>
-                  <div className="bg-afl-navy/50 rounded-lg p-2">
-                    <p className="font-bold text-white text-lg">
+                  <div className={`${theme.colors.bgCard} ${theme.styles.card} p-2`}>
+                    <p className={`font-bold ${theme.colors.textPrimary} text-lg`}>
                       {match.stats.tackles}
                     </p>
-                    <p className="text-gray-400 text-xs">Tackles</p>
+                    <p className={`${theme.colors.textSecondary} text-xs`}>Tackles</p>
                   </div>
                 </div>
 
                 {/* Actions */}
-                <div className="flex gap-2 pt-3 border-t border-dark-border">
+                <div className={`flex gap-2 pt-3 border-t ${theme.colors.border}`}>
                   <Link
                     to={`/match/${match.id}/view`}
-                    className="flex-1 text-center py-2 px-4 bg-afl-navy/70 text-white rounded-lg hover:bg-afl-blue-light text-sm font-medium transition-colors"
+                    className={`flex-1 text-center py-2 px-4 ${theme.colors.btnSecondary} ${theme.colors.textPrimary} ${theme.styles.button} text-sm font-medium`}
                   >
                     View Details
                   </Link>
@@ -165,13 +171,13 @@ export default function MatchHistoryPage() {
                     <>
                       <Link
                         to={`/match/${match.id}`}
-                        className="flex-1 text-center py-2 px-4 bg-afl-blue-light text-white rounded-lg hover:bg-afl-blue-lighter text-sm font-medium transition-colors"
+                        className={`flex-1 text-center py-2 px-4 ${theme.colors.btnPrimary} ${theme.colors.textPrimary} ${theme.styles.button} text-sm font-medium`}
                       >
                         Edit
                       </Link>
                       <button
                         onClick={() => handleDelete(match.id)}
-                        className="flex-1 py-2 px-4 bg-red-900/50 text-red-300 border border-red-700/50 rounded-lg hover:bg-red-900/70 text-sm font-medium transition-colors"
+                        className={`flex-1 py-2 px-4 ${theme.colors.statWarning} ${theme.styles.button} text-sm font-medium`}
                       >
                         Delete
                       </button>

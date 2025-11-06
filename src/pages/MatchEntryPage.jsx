@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { useTheme } from '../context/ThemeContext';
 import { createMatch, updateMatch, getMatch } from '../services/matchService';
+import ThemeSelector from '../components/ThemeSelector';
 
 export default function MatchEntryPage() {
   const { player, loading } = useApp();
+  const { theme } = useTheme();
   const navigate = useNavigate();
   const { id } = useParams();
   const isEditing = id && id !== 'new';
@@ -102,23 +105,23 @@ export default function MatchEntryPage() {
   };
 
   const StatCounter = ({ label, statName, value }) => (
-    <div className="bg-afl-navy/50 rounded-lg p-4 border border-dark-border">
-      <p className="text-sm text-gray-400 mb-2">{label}</p>
+    <div className={`${theme.colors.bgCard} ${theme.styles.card} p-4 border ${theme.colors.border}`}>
+      <p className={`text-sm ${theme.colors.textSecondary} mb-2`}>{label}</p>
       <div className="flex items-center justify-between">
         <button
           type="button"
           onClick={() => updateStat(statName, -1)}
-          className="bg-red-600 text-white w-12 h-12 rounded-full text-2xl font-bold hover:bg-red-700 active:bg-red-800 transition-colors shadow-lg"
+          className={`${theme.colors.statWarning} w-12 h-12 rounded-full text-2xl font-bold ${theme.styles.button}`}
         >
           -
         </button>
-        <span className="text-4xl font-bold text-white min-w-[60px] text-center">
+        <span className={`text-4xl font-bold ${theme.colors.textPrimary} min-w-[60px] text-center`}>
           {value}
         </span>
         <button
           type="button"
           onClick={() => updateStat(statName, 1)}
-          className="bg-grass-green text-white w-12 h-12 rounded-full text-2xl font-bold hover:bg-green-700 active:bg-green-800 transition-colors shadow-lg"
+          className={`${theme.colors.statSuccess} w-12 h-12 rounded-full text-2xl font-bold ${theme.styles.button}`}
         >
           +
         </button>
@@ -128,86 +131,86 @@ export default function MatchEntryPage() {
 
   if (loading || !player) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="text-xl">Loading...</div>
+      <div className={`min-h-screen ${theme.colors.bgPrimary} flex items-center justify-center`}>
+        <div className={`text-xl ${theme.colors.textPrimary}`}>Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-dark-bg">
+    <div className={`min-h-screen ${theme.colors.bgPrimary}`}>
       {/* Header */}
-      <div className="bg-gradient-to-r from-afl-navy via-afl-blue to-afl-blue-light text-white p-4 shadow-2xl">
+      <div className={`${theme.colors.bgSecondary} ${theme.colors.textPrimary} p-4 shadow-2xl`}>
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <button
             onClick={() => navigate(-1)}
-            className="text-white hover:text-afl-gold transition-colors"
+            className={`${theme.colors.textPrimary} hover:opacity-80 transition-opacity`}
           >
             ← Back
           </button>
           <h1 className="text-xl font-bold">
             {isEditing ? 'Edit Match' : 'New Match'}
           </h1>
-          <div className="w-16"></div> {/* Spacer for centering */}
+          <ThemeSelector />
         </div>
       </div>
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="max-w-4xl mx-auto p-4 space-y-6">
         {/* Match Details */}
-        <div className="bg-dark-card border border-dark-border rounded-xl shadow-2xl p-6">
-          <h2 className="text-xl font-bold mb-4 text-white">Match Details</h2>
+        <div className={`${theme.colors.bgCard} border ${theme.colors.border} ${theme.styles.card} p-6`}>
+          <h2 className={`text-xl font-bold mb-4 ${theme.colors.textPrimary}`}>Match Details</h2>
           
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
+              <label className={`block text-sm font-medium ${theme.colors.textSecondary} mb-1`}>
                 Date
               </label>
               <input
                 type="date"
                 value={formData.date}
                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                className="w-full bg-afl-navy border border-dark-border rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-afl-blue-lighter"
+                className={`w-full ${theme.colors.bgCard} border ${theme.colors.border} ${theme.styles.input} px-4 py-2 ${theme.colors.textPrimary}`}
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
+              <label className={`block text-sm font-medium ${theme.colors.textSecondary} mb-1`}>
                 Opponent *
               </label>
               <input
                 type="text"
                 value={formData.opponent}
                 onChange={(e) => setFormData({ ...formData, opponent: e.target.value })}
-                className="w-full bg-afl-navy border border-dark-border rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-afl-blue-lighter"
+                className={`w-full ${theme.colors.bgCard} border ${theme.colors.border} ${theme.styles.input} px-4 py-2 ${theme.colors.textPrimary}`}
                 placeholder="e.g., Hampton Rovers"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
+              <label className={`block text-sm font-medium ${theme.colors.textSecondary} mb-1`}>
                 Venue
               </label>
               <input
                 type="text"
                 value={formData.venue}
                 onChange={(e) => setFormData({ ...formData, venue: e.target.value })}
-                className="w-full bg-afl-navy border border-dark-border rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-afl-blue-lighter"
+                className={`w-full ${theme.colors.bgCard} border ${theme.colors.border} ${theme.styles.input} px-4 py-2 ${theme.colors.textPrimary}`}
                 placeholder="e.g., President Park"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
+                <label className={`block text-sm font-medium ${theme.colors.textSecondary} mb-1`}>
                   Position
                 </label>
                 <select
                   value={formData.position}
                   onChange={(e) => setFormData({ ...formData, position: e.target.value })}
-                  className="w-full bg-afl-navy border border-dark-border rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-afl-blue-lighter"
+                  className={`w-full ${theme.colors.bgCard} border ${theme.colors.border} ${theme.styles.input} px-4 py-2 ${theme.colors.textPrimary}`}
                 >
                   <option value="">Select position</option>
                   <option value="Forward">Forward</option>
@@ -218,13 +221,13 @@ export default function MatchEntryPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
+                <label className={`block text-sm font-medium ${theme.colors.textSecondary} mb-1`}>
                   Quarters Played
                 </label>
                 <select
                   value={formData.quartersPlayed}
                   onChange={(e) => setFormData({ ...formData, quartersPlayed: parseInt(e.target.value) })}
-                  className="w-full bg-afl-navy border border-dark-border rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-afl-blue-lighter"
+                  className={`w-full ${theme.colors.bgCard} border ${theme.colors.border} ${theme.styles.input} px-4 py-2 ${theme.colors.textPrimary}`}
                 >
                   <option value="1">1 Quarter</option>
                   <option value="2">2 Quarters</option>
@@ -235,13 +238,13 @@ export default function MatchEntryPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
+              <label className={`block text-sm font-medium ${theme.colors.textSecondary} mb-1`}>
                 Result
               </label>
               <select
                 value={formData.result}
                 onChange={(e) => setFormData({ ...formData, result: e.target.value })}
-                className="w-full bg-afl-navy border border-dark-border rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-afl-blue-lighter"
+                className={`w-full ${theme.colors.bgCard} border ${theme.colors.border} ${theme.styles.input} px-4 py-2 ${theme.colors.textPrimary}`}
               >
                 <option value="Unknown">Unknown</option>
                 <option value="Win">Win</option>
@@ -253,8 +256,8 @@ export default function MatchEntryPage() {
         </div>
 
         {/* Stats Counters */}
-        <div className="bg-dark-card border border-dark-border rounded-xl shadow-2xl p-6">
-          <h2 className="text-xl font-bold mb-4 text-white">Statistics</h2>
+        <div className={`${theme.colors.bgCard} border ${theme.colors.border} ${theme.styles.card} p-6`}>
+          <h2 className={`text-xl font-bold mb-4 ${theme.colors.textPrimary}`}>Statistics</h2>
           
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
@@ -286,12 +289,12 @@ export default function MatchEntryPage() {
         </div>
 
         {/* Notes */}
-        <div className="bg-dark-card border border-dark-border rounded-xl shadow-2xl p-6">
-          <h2 className="text-xl font-bold mb-4 text-white">Notes (Optional)</h2>
+        <div className={`${theme.colors.bgCard} border ${theme.colors.border} ${theme.styles.card} p-6`}>
+          <h2 className={`text-xl font-bold mb-4 ${theme.colors.textPrimary}`}>Notes (Optional)</h2>
           <textarea
             value={formData.notes}
             onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-            className="w-full bg-afl-navy border border-dark-border rounded-lg px-4 py-2 h-24 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-afl-blue-lighter"
+            className={`w-full ${theme.colors.bgCard} border ${theme.colors.border} ${theme.styles.input} px-4 py-2 h-24 ${theme.colors.textPrimary}`}
             placeholder="Add any additional notes about this match..."
           />
         </div>
@@ -301,7 +304,7 @@ export default function MatchEntryPage() {
           <button
             type="submit"
             disabled={saving}
-            className="w-full bg-gradient-to-r from-afl-accent to-red-600 text-white py-4 px-6 rounded-xl text-xl font-bold shadow-2xl hover:from-red-600 hover:to-afl-accent transition-all duration-200 disabled:from-gray-600 disabled:to-gray-700"
+            className={`w-full ${theme.colors.btnPrimary} ${theme.colors.textPrimary} py-4 px-6 ${theme.styles.button} text-xl font-bold disabled:opacity-50`}
           >
             {saving ? 'Saving...' : (isEditing ? 'Update Match' : 'Save Match')}
           </button>
