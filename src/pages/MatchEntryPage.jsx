@@ -97,23 +97,23 @@ export default function MatchEntryPage() {
   };
 
   const StatCounter = ({ label, statName, value }) => (
-    <div className="bg-gray-50 rounded-lg p-4">
-      <p className="text-sm text-gray-600 mb-2">{label}</p>
+    <div className="bg-afl-navy/50 rounded-lg p-4 border border-dark-border">
+      <p className="text-sm text-gray-400 mb-2">{label}</p>
       <div className="flex items-center justify-between">
         <button
           type="button"
           onClick={() => updateStat(statName, -1)}
-          className="bg-red-500 text-white w-12 h-12 rounded-full text-2xl font-bold hover:bg-red-600 active:bg-red-700"
+          className="bg-red-600 text-white w-12 h-12 rounded-full text-2xl font-bold hover:bg-red-700 active:bg-red-800 transition-colors shadow-lg"
         >
           -
         </button>
-        <span className="text-4xl font-bold text-gray-800 min-w-[60px] text-center">
+        <span className="text-4xl font-bold text-white min-w-[60px] text-center">
           {value}
         </span>
         <button
           type="button"
           onClick={() => updateStat(statName, 1)}
-          className="bg-grass-green text-white w-12 h-12 rounded-full text-2xl font-bold hover:bg-green-700 active:bg-green-800"
+          className="bg-grass-green text-white w-12 h-12 rounded-full text-2xl font-bold hover:bg-green-700 active:bg-green-800 transition-colors shadow-lg"
         >
           +
         </button>
@@ -122,13 +122,13 @@ export default function MatchEntryPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-dark-bg">
       {/* Header */}
-      <div className="bg-afl-red text-white p-4 shadow-lg">
+      <div className="bg-gradient-to-r from-afl-navy via-afl-blue to-afl-blue-light text-white p-4 shadow-2xl">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <button
             onClick={() => navigate(-1)}
-            className="text-white hover:underline"
+            className="text-white hover:text-afl-gold transition-colors"
           >
             ← Back
           </button>
@@ -140,61 +140,61 @@ export default function MatchEntryPage() {
       </div>
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="max-w-4xl mx-auto p-4">
+      <form onSubmit={handleSubmit} className="max-w-4xl mx-auto p-4 space-y-6">
         {/* Match Details */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-xl font-bold mb-4 text-gray-800">Match Details</h2>
+        <div className="bg-dark-card border border-dark-border rounded-xl shadow-2xl p-6">
+          <h2 className="text-xl font-bold mb-4 text-white">Match Details</h2>
           
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-300 mb-1">
                 Date
               </label>
               <input
                 type="date"
                 value={formData.date}
                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                className="w-full bg-afl-navy border border-dark-border rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-afl-blue-lighter"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-300 mb-1">
                 Opponent *
               </label>
               <input
                 type="text"
                 value={formData.opponent}
                 onChange={(e) => setFormData({ ...formData, opponent: e.target.value })}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                className="w-full bg-afl-navy border border-dark-border rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-afl-blue-lighter"
                 placeholder="e.g., Hampton Rovers"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-300 mb-1">
                 Venue
               </label>
               <input
                 type="text"
                 value={formData.venue}
                 onChange={(e) => setFormData({ ...formData, venue: e.target.value })}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                className="w-full bg-afl-navy border border-dark-border rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-afl-blue-lighter"
                 placeholder="e.g., President Park"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-300 mb-1">
                   Position
                 </label>
                 <select
                   value={formData.position}
                   onChange={(e) => setFormData({ ...formData, position: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                  className="w-full bg-afl-navy border border-dark-border rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-afl-blue-lighter"
                 >
                   <option value="">Select position</option>
                   <option value="Forward">Forward</option>
@@ -205,13 +205,13 @@ export default function MatchEntryPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-300 mb-1">
                   Quarters Played
                 </label>
                 <select
                   value={formData.quartersPlayed}
                   onChange={(e) => setFormData({ ...formData, quartersPlayed: parseInt(e.target.value) })}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                  className="w-full bg-afl-navy border border-dark-border rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-afl-blue-lighter"
                 >
                   <option value="1">1 Quarter</option>
                   <option value="2">2 Quarters</option>
@@ -222,13 +222,13 @@ export default function MatchEntryPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-300 mb-1">
                 Result
               </label>
               <select
                 value={formData.result}
                 onChange={(e) => setFormData({ ...formData, result: e.target.value })}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                className="w-full bg-afl-navy border border-dark-border rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-afl-blue-lighter"
               >
                 <option value="Unknown">Unknown</option>
                 <option value="Win">Win</option>
@@ -240,8 +240,8 @@ export default function MatchEntryPage() {
         </div>
 
         {/* Stats Counters */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-xl font-bold mb-4 text-gray-800">Statistics</h2>
+        <div className="bg-dark-card border border-dark-border rounded-xl shadow-2xl p-6">
+          <h2 className="text-xl font-bold mb-4 text-white">Statistics</h2>
           
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
@@ -273,12 +273,12 @@ export default function MatchEntryPage() {
         </div>
 
         {/* Notes */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-xl font-bold mb-4 text-gray-800">Notes (Optional)</h2>
+        <div className="bg-dark-card border border-dark-border rounded-xl shadow-2xl p-6">
+          <h2 className="text-xl font-bold mb-4 text-white">Notes (Optional)</h2>
           <textarea
             value={formData.notes}
             onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 h-24"
+            className="w-full bg-afl-navy border border-dark-border rounded-lg px-4 py-2 h-24 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-afl-blue-lighter"
             placeholder="Add any additional notes about this match..."
           />
         </div>
@@ -288,7 +288,7 @@ export default function MatchEntryPage() {
           <button
             type="submit"
             disabled={saving}
-            className="w-full bg-afl-red text-white py-4 px-6 rounded-lg text-xl font-bold shadow-lg hover:bg-red-700 transition disabled:bg-gray-400"
+            className="w-full bg-gradient-to-r from-afl-accent to-red-600 text-white py-4 px-6 rounded-xl text-xl font-bold shadow-2xl hover:from-red-600 hover:to-afl-accent transition-all duration-200 disabled:from-gray-600 disabled:to-gray-700"
           >
             {saving ? 'Saving...' : (isEditing ? 'Update Match' : 'Save Match')}
           </button>
