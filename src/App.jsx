@@ -1,11 +1,12 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AppProvider, useApp } from './context/AppContext';
-import HomePage from './pages/HomePage';
+import { ThemeProvider } from './context/ThemeContext';
+import ThemedHomePage from './pages/ThemedHomePage';
+import ThemedDashboardPage from './pages/ThemedDashboardPage';
 import MatchEntryPage from './pages/MatchEntryPage';
 import MatchHistoryPage from './pages/MatchHistoryPage';
 import MatchDetailPage from './pages/MatchDetailPage';
-import DashboardPage from './pages/DashboardPage';
 import PasswordProtection from './pages/PasswordProtection';
 
 function AppRoutes() {
@@ -18,12 +19,12 @@ function AppRoutes() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<ThemedHomePage />} />
         <Route path="/match/new" element={<MatchEntryPage />} />
         <Route path="/match/:id" element={<MatchEntryPage />} />
         <Route path="/match/:id/view" element={<MatchDetailPage />} />
         <Route path="/history" element={<MatchHistoryPage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/dashboard" element={<ThemedDashboardPage />} />
       </Routes>
     </Router>
   );
@@ -31,9 +32,11 @@ function AppRoutes() {
 
 function App() {
   return (
-    <AppProvider>
-      <AppRoutes />
-    </AppProvider>
+    <ThemeProvider>
+      <AppProvider>
+        <AppRoutes />
+      </AppProvider>
+    </ThemeProvider>
   );
 }
 
