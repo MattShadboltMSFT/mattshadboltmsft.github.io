@@ -61,9 +61,8 @@ export async function clearTestData() {
 
 // Get season statistics
 export async function getSeasonStats(playerId, season) {
-  const allMatches = await getAllMatches(playerId, true); // Get all matches first
-  const matches = allMatches.filter(m => !m.isTestData); // Exclude test data
-  const seasonMatches = matches.filter(m => {
+  const allMatches = await getAllMatches(playerId, true); // Get all matches including test data
+  const seasonMatches = allMatches.filter(m => {
     const matchYear = new Date(m.date).getFullYear();
     return matchYear === season;
   });
