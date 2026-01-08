@@ -18,9 +18,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Configuration constants
-const REQUEST_DELAY_MS = 100; // Delay between requests to avoid overwhelming servers
+const REQUEST_DELAY_MS = 500; // Delay between requests to avoid overwhelming servers
 const MAX_AFL_ROUNDS = 24; // Standard number of AFL rounds per season
-const AVAILABLE_YEARS = [2023, 2024, 2025];
+const AVAILABLE_YEARS = [2023, 2024, 2025]; // Configurable years - update as needed
 const OUTPUT_DIR = path.join(__dirname, '../../../dataOutput');
 
 /**
@@ -183,8 +183,10 @@ function generateCSV(playerData) {
   
   // CSV Rows
   playerData.forEach(player => {
+    // Escape double quotes in player names according to RFC 4180
+    const escapedName = player.name.replace(/"/g, '""');
     const row = [
-      `"${player.name}"`,
+      `"${escapedName}"`,
       player.gamesPlayed,
       player.totalScore,
       player.averageScore
