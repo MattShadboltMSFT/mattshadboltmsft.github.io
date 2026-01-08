@@ -1,10 +1,25 @@
 /**
  * AFL Data Service
  * Fetches AFL player statistics and SuperCoach scores from external sources
+ * 
+ * IMPORTANT: This service makes direct requests to external websites.
+ * Due to CORS (Cross-Origin Resource Sharing) policies, these requests may be blocked
+ * when running in a browser environment.
+ * 
+ * Workarounds:
+ * 1. Use a CORS proxy service (e.g., https://corsproxy.io, https://cors-anywhere.herokuapp.com)
+ * 2. Set up a backend proxy server to fetch data on behalf of the client
+ * 3. Use browser extensions that disable CORS during development
+ * 4. Deploy the app with a serverless function to handle data fetching
  */
 
+// Configuration constants
+const REQUEST_DELAY_MS = 100; // Delay between requests to avoid overwhelming servers
+const MAX_AFL_ROUNDS = 24; // Standard number of AFL rounds per season
+
 /**
- * Fetch HTML content from a URL using CORS proxy if needed
+ * Fetch HTML content from a URL
+ * Note: May require CORS proxy for cross-origin requests
  */
 async function fetchHTML(url) {
   try {
@@ -63,8 +78,18 @@ function parseAFLTablesPlayers(html, year) {
 
 /**
  * Fetch SuperCoach scores for a specific round
+ * @param {number} year - The AFL season year (e.g., 2023)
+ * @param {number} round - The round number (1-24)
  */
 async function fetchSuperCoachRound(year, round) {
+  // Validate parameters to prevent injection
+  if (!Number.isInteger(year) || year < 2000 || year > 2100) {
+    throw new Error(`Invalid year: ${year}`);
+  }
+  if (!Number.isInteger(round) || round < 1 || round > MAX_AFL_ROUNDS) {
+    throw new Error(`Invalid round: ${round}`);
+  }
+  
   const url = `https://www.footywire.com/afl/footy/supercoach_round?year=${year}&round=${round}&p=&s=T`;
   
   try {
@@ -114,8 +139,11 @@ async function fetchSuperCoachRound(year, round) {
 
 /**
  * Fetch all SuperCoach scores for a season
+ * @param {number} year - The AFL season year
+ * @param {number} maxRounds - Maximum number of rounds to fetch (default: MAX_AFL_ROUNDS)
+ * @param {Function} onProgress - Optional progress callback
  */
-export async function fetchSuperCoachSeason(year, maxRounds = 24, onProgress = null) {
+export async function fetchSuperCoachSeason(year, maxRounds = MAX_AFL_ROUNDS, onProgress = null) {
   const allScores = [];
   
   for (let round = 1; round <= maxRounds; round++) {
@@ -128,7 +156,7 @@ export async function fetchSuperCoachSeason(year, maxRounds = 24, onProgress = n
       allScores.push(...roundScores);
       
       // Small delay to avoid overwhelming the server
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, REQUEST_DELAY_MS));
     } catch (error) {
       console.error(`Failed to fetch round ${round}:`, error);
     }
@@ -139,6 +167,8 @@ export async function fetchSuperCoachSeason(year, maxRounds = 24, onProgress = n
 
 /**
  * Calculate average SuperCoach scores per player
+ * @param {Array} scores - Array of score objects with name and score properties
+ * @returns {Array} Array of player objects with calculated averages
  */
 export function calculateAverageScores(scores) {
   const playerScores = {};
@@ -163,7 +193,7 @@ export function calculateAverageScores(scores) {
     name: player.name,
     gamesPlayed: player.count,
     totalScore: player.total,
-    averageScore: Math.round(player.total / player.count * 10) / 10 // Round to 1 decimal
+    averageScore: Number((player.total / player.count).toFixed(1)) // Round to 1 decimal
   }));
   
   // Sort by average score descending
@@ -174,8 +204,14 @@ export function calculateAverageScores(scores) {
 
 /**
  * Fetch AFL Tables player data
+ * @param {number} year - The AFL season year
  */
 export async function fetchAFLTablesPlayers(year) {
+  // Validate year parameter
+  if (!Number.isInteger(year) || year < 2000 || year > 2100) {
+    throw new Error(`Invalid year: ${year}`);
+  }
+  
   const url = `https://afltables.com/afl/stats/${year}.html`;
   
   try {
@@ -233,6 +269,8 @@ export function downloadCSV(csvContent, filename) {
 
 /**
  * Fetch and generate CSV for a specific year
+ * @param {number} year - The AFL season year
+ * @param {Function} onProgress - Optional progress callback
  */
 export async function generateSeasonCSV(year, onProgress = null) {
   try {
@@ -242,7 +280,7 @@ export async function generateSeasonCSV(year, onProgress = null) {
     }
     
     // Fetch SuperCoach scores for all rounds
-    const scores = await fetchSuperCoachSeason(year, 24, (round, maxRounds) => {
+    const scores = await fetchSuperCoachSeason(year, MAX_AFL_ROUNDS, (round, maxRounds) => {
       if (onProgress) {
         onProgress({
           status: 'fetching',

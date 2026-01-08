@@ -18,6 +18,16 @@ The tool:
   - Total Score
   - Average SuperCoach Score
 
+#### Important Notes
+
+**CORS Limitations**: This tool fetches data directly from external websites. Due to CORS (Cross-Origin Resource Sharing) policies, these requests may be blocked by browsers. 
+
+**Workarounds**:
+1. Deploy the app with a backend proxy or serverless function to handle data fetching
+2. Use a CORS proxy service during development
+3. Use browser extensions that temporarily disable CORS for development
+4. Wait for the external sites to enable CORS headers
+
 #### How to Use
 
 1. Select the seasons you want to generate CSVs for (2023, 2024, 2025)

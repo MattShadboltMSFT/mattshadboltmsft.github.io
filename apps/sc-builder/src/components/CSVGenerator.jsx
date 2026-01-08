@@ -4,14 +4,15 @@ import {
   downloadCSV
 } from '../services/aflDataService';
 
+// Configuration - Available seasons for CSV generation
+const AVAILABLE_YEARS = [2023, 2024, 2025];
+
 function CSVGenerator() {
-  const [selectedYears, setSelectedYears] = useState([2023, 2024, 2025]);
+  const [selectedYears, setSelectedYears] = useState([...AVAILABLE_YEARS]);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState('');
   const [results, setResults] = useState([]);
   const [error, setError] = useState('');
-
-  const availableYears = [2023, 2024, 2025];
 
   const handleYearToggle = (year) => {
     setSelectedYears(prev => {
@@ -86,7 +87,7 @@ function CSVGenerator() {
       }}>
         <h2 style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>Select Seasons</h2>
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-          {availableYears.map(year => (
+          {AVAILABLE_YEARS.map(year => (
             <label
               key={year}
               style={{
