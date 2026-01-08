@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run build:landing && npm run build:jaysfooty",
+    "build": "npm run build:landing && npm run build:jaysfooty && npm run build:sc-builder",
     "build:landing": "node scripts/build-landing.js",
     "build:jaysfooty": "vite build && node scripts/rename-html.js",
+    "build:sc-builder": "cd apps/sc-builder && npm install && npm run build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
