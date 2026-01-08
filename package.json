@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "npm run build:landing && npm run build:jaysfooty",
     "build:landing": "node scripts/build-landing.js",
-    "build:jaysfooty": "vite build",
+    "build:jaysfooty": "vite build && node scripts/rename-html.js",
     "lint": "eslint .",
     "preview": "vite preview"
   },

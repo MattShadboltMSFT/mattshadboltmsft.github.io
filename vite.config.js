@@ -8,6 +8,16 @@ export default defineConfig({
   build: {
     outDir: 'dist/jaysfooty',
     emptyOutDir: true,
+    rollupOptions: {
+      input: {
+        app: '/jaysfooty.html'
+      },
+      output: {
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]'
+      }
+    }
   },
   plugins: [
     react(),
