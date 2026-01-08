@@ -6,5 +6,6 @@ try {
   console.log('✓ Renamed jaysfooty.html to index.html');
 } catch (error) {
   console.error('Error renaming file:', error.message);
+  // eslint-disable-next-line no-undef
   process.exit(1);
 }
