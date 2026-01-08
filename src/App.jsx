@@ -16,7 +16,7 @@ function AppRoutes() {
   }
 
   return (
-    <Router>
+    <Router basename="/jaysfooty">
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/match/new" element={<MatchEntryPage />} />
