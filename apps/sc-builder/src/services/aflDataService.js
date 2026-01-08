@@ -190,7 +190,7 @@ export async function fetchAFLTablesPlayers(year) {
 /**
  * Generate CSV content from player data
  */
-export function generateCSV(playerData, year) {
+export function generateCSV(playerData) {
   if (!playerData || playerData.length === 0) {
     return '';
   }
@@ -264,7 +264,7 @@ export async function generateSeasonCSV(year, onProgress = null) {
     }
     
     // Generate CSV
-    const csv = generateCSV(playerData, year);
+    const csv = generateCSV(playerData);
     
     if (onProgress) {
       onProgress({ status: 'complete', message: `CSV generated for ${year}`, data: playerData });

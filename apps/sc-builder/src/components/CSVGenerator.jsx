@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  generateSeasonCSV,
   generateAllSeasonCSVs,
   downloadCSV
 } from '../services/aflDataService';
